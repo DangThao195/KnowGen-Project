@@ -20,15 +20,12 @@ def run_etl_pipeline(file_paths: List[str] = None, run_notion: bool = False):
     """
     Run the complete Extract -> Transform -> Load pipeline.
     """
-    logger.info("=== STARTING ETL PIPELINE ===")
-    
-    
     # 1. EXTRACT STAGE
     documents: List[Document] = []
     
     # Extract Local Files
     if file_paths:
-        logger.info("--- EXTRACTING LOCAL FILES ---")
+        logger.info("EXTRACTING LOCAL FILES")
         for path in file_paths:
             if not os.path.exists(path):
                 logger.error("File not found: %s", path)
@@ -47,7 +44,7 @@ def run_etl_pipeline(file_paths: List[str] = None, run_notion: bool = False):
 
     # Extract Notion
     if run_notion:
-        logger.info("--- EXTRACTING NOTION ---")
+        logger.info("EXTRACTING NOTION")
         notion_token = os.getenv("NOTION_TOKEN")
         notion_page_id = os.getenv("NOTION_TEST_PAGE_ID")
         
@@ -66,7 +63,7 @@ def run_etl_pipeline(file_paths: List[str] = None, run_notion: bool = False):
     logger.info("Extracted %d document(s) successfully.", len(documents))
 
     # 2. TRANSFORM STAGE
-    logger.info("--- TRANSFORMING DOCUMENTS ---")
+    logger.info("TRANSFORMING DOCUMENTS")
     transformed_docs = transform_documents(documents)
     
     if not transformed_docs:
@@ -76,19 +73,19 @@ def run_etl_pipeline(file_paths: List[str] = None, run_notion: bool = False):
     logger.info("Transformed %d document(s) successfully.", len(transformed_docs))
 
     # 3. LOAD STAGE
-    logger.info("--- LOADING TO VECTOR STORE (FAISS) ---")
+    logger.info("LOADING TO VECTOR STORE (FAISS)")
     vectorstore = load_documents_to_faiss(transformed_docs)
     
     if vectorstore:
-        logger.info("=== ETL PIPELINE COMPLETED SUCCESSFULLY ===")
+        logger.info("ETL PIPELINE COMPLETED SUCCESSFULLY")
     else:
-        logger.error("=== ETL PIPELINE FAILED DURING LOAD STAGE ===")
+        logger.error("ETL PIPELINE FAILED DURING LOAD STAGE")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Document ETL Pipeline")
-    parser.add_argument("--files", nargs="+", help="List of PDF or DOCX files to process")
-    parser.add_argument("--notion", action="store_true", help="Extract from Notion using .env credentials")
-    parser.add_argument("--sample", action="store_true", help="Run with a hardcoded sample file")
+    parser.add_argument("files", nargs="+", help="List of PDF or DOCX files to process")
+    parser.add_argument("notion", action="store_true", help="Extract from Notion using .env credentials")
+    parser.add_argument("sample", action="store_true", help="Run with a hardcoded sample file")
     
     args = parser.parse_args()
     
@@ -99,7 +96,7 @@ if __name__ == "__main__":
         
     if args.sample:
         # Default testing sample
-        sample_path = "C:\\Users\\huuda\\Downloads\\102230316_HuynhBaoQuyen_23TDT3.docx"
+        sample_path = "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf"
         files_to_process.append(sample_path)
         
     if not files_to_process and not args.notion:
