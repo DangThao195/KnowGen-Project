@@ -1,0 +1,10 @@
+{
+    "python.analysis.extraPaths": [
+        "./backend"
+    ],
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+    "pyre2.searchPaths": [
+        "${workspaceFolder}/backend",
+        "${workspaceFolder}/backend/.venv/Lib/site-packages"
+    ]
+}

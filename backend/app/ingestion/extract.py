@@ -154,7 +154,7 @@ def run_extractor_demo():
     print("Starting ETL Pipeline...")
     documents: List[Document] = []
     
-    sample_path = "C:\\Users\\huuda\\Downloads\\102230316_HuynhBaoQuyen_23TDT3.docx"
+    sample_path = r"H:\\ĐH 1,2\\BT CNXHKH.docx"
     
     # 1. Scan file Local
     files_to_process = [sample_path] if os.path.isfile(sample_path) else [os.path.join(sample_path, f) for f in os.listdir(sample_path)] if os.path.isdir(sample_path) else []
