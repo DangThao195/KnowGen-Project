@@ -1,16 +1,8 @@
 import json
 from typing import TypedDict, List, Dict, Any, Literal
 from langchain_core.documents import Document
-from langgraph import graph
 from langgraph.graph import StateGraph, START, END
 from langchain_core.prompts import PromptTemplate
-# Trong multi_agent.py
-from app.agents.retriever_agent import retriever_agent
-from asyncio import graph
-
-graph.add_node("retriever", retriever_agent)
-graph.add_edge("supervisor", "retriever")
-graph.add_edge("retriever", "generator")  # Next stage
 
 # Prevent import errors if running as a script
 import sys, os
