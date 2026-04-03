@@ -40,7 +40,7 @@ The Retriever returns a dictionary that LangGraph uses to update `AgentState`:
     "retrieval_strategy": {
         "total_retrieved": 10,
         "top_k": 5,
-        "confidence_threshold": 0.75,
+        "confidence_threshold": 0.75, #fix chỗ này thành 0.3 để test
         "sources": ["pdf", "docx"]
     }
 }

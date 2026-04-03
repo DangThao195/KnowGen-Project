@@ -15,7 +15,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from app.llm.llm_client import LLMClient
-from app.agents.multi_agent import AgentState
+from app.agents.agent_state import AgentState
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 # Configuration
 VECTOR_STORE_DIR = Path(os.getcwd()) / "vector_store" / "faiss_index"
 EMBEDDING_MODEL = "intfloat/multilingual-e5-base"
-CONFIDENCE_THRESHOLD = 0.70
+CONFIDENCE_THRESHOLD = 0.30
 TOP_K = 5
 INITIAL_SEARCH_K = 20
-DEDUP_THRESHOLD = 0.80  # 80% overlap = duplicate
+DEDUP_THRESHOLD = 0.80  
 
 
 class RetrieverAgent:
@@ -96,26 +96,53 @@ class RetrieverAgent:
             "unknown": "Standard information retrieval with emphasis on clarity."
         }.get(task_type, "Standard retrieval")
         
-        prompt = f"""You are a query optimization expert. Rewrite the following user query into an optimized search query for semantic vector search.
+        # Use more specific examples based on language
+        if language == "vi":
+            examples = """
+EXAMPLES:
+- "Chủ nghĩa xã hội là gì?" → "Chủ nghĩa xã hội khoa học định nghĩa khái niệm lý thuyết Marx Engels đặc điểm"
+- "Những đặc điểm chính của CNXH là gì?" → "Đặc điểm chính CNXH khoa học tính chất nguyên tắc cơ bản"
+"""
+        else:
+            examples = """
+EXAMPLES:
+- "What is socialism?" → "socialism scientific socialism theory characteristics definition features Marx"
+- "What are main features?" → "main features characteristics attributes key properties aspects"
+"""
+        
+        prompt = f"""You are a query optimization expert for Vietnamese/English academic documents. MUST rewrite the query to be LONGER and RICHER.
 
 Original Query: {user_query}
 Context Needed: {context_needed}
 Task Type: {task_type} - {task_instruction}
 Query Language: {language}
 
-Optimization Rules:
-1. Expand abbreviations and implicit concepts
-2. Include both the main topic and related keywords (synonyms, broader terms, specific aspects)
-3. Use natural language without special operators
-4. Preserve the query language (English for English queries, Vietnamese for Vietnamese queries)
-5. Output ONLY the rewritten query, no explanation
+{examples}
+
+Your Task - MUST do the following:
+1. Expand ANY abbreviations (CNXH → Chủ nghĩa Xã hội, etc.)
+2. Add related synonyms and concept variations
+3. Include broader terms and specific aspects
+4. Make the query LONGER with more keywords
+5. Preserve the original language
+6. Output ONLY the expanded query, nothing else - NO explanations!
+
+IMPORTANT: The rewritten query MUST be longer and contain MORE keywords than the original.
 
 Optimized Query:"""
         
         try:
             rewritten = self.llm_client.generate_response(prompt)
             rewritten_query = rewritten.strip()
-            logger.info(f"Query rewritten: {user_query[:50]}... → {rewritten_query[:50]}...")
+            
+            # Check if rewrite actually expanded the query
+            if len(rewritten_query) <= len(user_query):
+                logger.warning(f"Query not expanded enough. Using expansion strategy.")
+                # Fallback: manually add context terms if LLM didn't expand enough
+                if context_needed and rewritten_query.lower() == user_query.lower():
+                    rewritten_query = f"{user_query} {context_needed}"
+            
+            logger.info(f"Query rewritten: '{user_query[:40]}...' ({len(user_query)} chars) → '{rewritten_query[:40]}...' ({len(rewritten_query)} chars)")
             return rewritten_query
         except Exception as e:
             logger.warning(f"Query rewriting failed, using original: {e}")
@@ -146,8 +173,8 @@ Optimized Query:"""
         try:
             # Search for candidates
             logger.info(f"Searching for {initial_k} candidates with query: {query}")
-            # FAISS similarity_search_with_scores returns (Document, score) tuples
-            results = self.vectorstore.similarity_search_with_scores(
+            # FAISS similarity_search_with_relevance_scores returns (Document, score) tuples
+            results = self.vectorstore.similarity_search_with_relevance_scores(
                 query_with_prefix, 
                 k=initial_k
             )

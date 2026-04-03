@@ -1,7 +1,13 @@
 import os
 import argparse
 import logging
+import sys
 from typing import List
+from pathlib import Path
+
+# Configure sys.path BEFORE imports to allow running from any directory
+backend_dir = Path(__file__).resolve().parent.parent.parent  # Go up 3 levels: ingestion -> app -> backend
+sys.path.insert(0, str(backend_dir))
 
 from dotenv import load_dotenv
 
@@ -10,7 +16,7 @@ from app.ingestion.transform import transform_documents
 from app.ingestion.load import load_documents_to_faiss
 
 # Load environment variables (adjust path if needed)
-load_dotenv(os.path.join(os.path.dirname(os.getcwd()), '.env'))
+load_dotenv(os.path.join(str(backend_dir), '.env'))
 load_dotenv() # Fallback to current directory .env
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -96,7 +102,7 @@ if __name__ == "__main__":
         
     if args.sample:
         # Default testing sample
-        sample_path = "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf"
+        sample_path = r"H:\ĐH 1,2\BT CNXHKH.docx"
         files_to_process.append(sample_path)
         
     if not files_to_process and not args.notion:
