@@ -1,18 +1,13 @@
-import json
 import logging
-from typing import List, Dict, Any
-from langgraph.graph import StateGraph, START, END
-from langchain_core.prompts import PromptTemplate
+from typing import Dict, Any
+from langgraph.graph import StateGraph, END
 
-# Prevent import errors if running as a script
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-# Import AgentState from dedicated module to avoid circular imports
 from app.agents.agent_state import AgentState
-from app.llm.llm_client import LLMClient
 from app.agents.supervisor_agent import supervisor_node
-from app.agents.retriever_agent import retriever_agent
+from app.agents.retriever_agent import retriever_node
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -48,7 +43,7 @@ def build_knowgen_workflow() -> StateGraph:
     logger.info("  ✓ Supervisor node added")
     
     # Retriever: Document retrieval and ranking
-    workflow.add_node("retriever", retriever_agent)
+    workflow.add_node("retriever", retriever_node)
     logger.info("  ✓ Retriever node added")
     
     # Future nodes can be added here:

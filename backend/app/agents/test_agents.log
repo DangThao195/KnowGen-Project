@@ -1,0 +1,479 @@
+2026-04-07 17:12:26,874 [INFO] test_agents — ======================================================================
+2026-04-07 17:12:26,874 [INFO] test_agents — STEP 1: INGESTING PDF INTO FAISS
+2026-04-07 17:12:26,874 [INFO] test_agents — ======================================================================
+2026-04-07 17:12:31,929 [INFO] app.ingestion.etl — EXTRACTING LOCAL FILES
+2026-04-07 17:12:33,471 [INFO] app.ingestion.etl — Extracted 1 document(s) successfully.
+2026-04-07 17:12:33,480 [INFO] app.ingestion.etl — TRANSFORMING DOCUMENTS
+2026-04-07 17:12:34,240 [INFO] app.ingestion.transform — Transforming document: a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:12:34,329 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:12:43,330 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:12:43,333 [INFO] app.ingestion.transform — Done 'a.thuvienvatly.com.2160e.47524.pdf': summary=ok, chunks=29
+2026-04-07 17:12:43,341 [INFO] app.ingestion.etl — Transformed 1 document(s) successfully.
+2026-04-07 17:12:43,342 [INFO] app.ingestion.etl — LOADING TO VECTOR STORE (FAISS)
+2026-04-07 17:12:43,342 [INFO] app.ingestion.load — Loading Embedding: intfloat/multilingual-e5-base
+2026-04-07 17:12:45,817 [INFO] sentence_transformers.SentenceTransformer — Use pytorch device_name: cpu
+2026-04-07 17:12:45,818 [INFO] sentence_transformers.SentenceTransformer — Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+2026-04-07 17:12:50,691 [INFO] app.ingestion.load — Flattened 1 TransformedDocument(s) into 29 Langchain Document(s) (added 'passage: ' prefix)
+2026-04-07 17:12:50,691 [INFO] app.ingestion.load — Creating Vector Embeddings for 29 chunks and indexing into FAISS... (This process may take time depending on your machine)
+2026-04-07 17:12:55,953 [INFO] faiss.loader — Loading faiss with AVX2 support.
+2026-04-07 17:12:55,971 [INFO] faiss.loader — Successfully loaded faiss with AVX2 support.
+2026-04-07 17:12:55,976 [INFO] app.ingestion.load — Successfully created new FAISS index in RAM with 29 vectors.
+2026-04-07 17:12:55,977 [INFO] app.ingestion.load — No existing index found — creating a fresh one.
+2026-04-07 17:12:55,979 [INFO] app.ingestion.load — Successfully saved FAISS Index database to directory: D:\KnowGen-Project\backend\vector_store\faiss_index
+2026-04-07 17:12:55,979 [INFO] app.ingestion.etl — ETL PIPELINE COMPLETED SUCCESSFULLY
+2026-04-07 17:12:55,979 [INFO] test_agents —   -> FAISS index saved to: D:\KnowGen-Project\backend\vector_store\faiss_index
+2026-04-07 17:12:55,979 [INFO] test_agents — ======================================================================
+2026-04-07 17:12:55,979 [INFO] test_agents — STEP 2: TESTING SUPERVISOR AGENT
+2026-04-07 17:12:55,980 [INFO] test_agents — ======================================================================
+2026-04-07 17:12:56,646 [INFO] test_agents — 
+--- Query 1/4: Sóng cơ học là gì? Phân loại sóng ngang và sóng dọc.
+2026-04-07 17:12:56,647 [INFO] knowgen.supervisor — === SUPERVISOR AGENT RUNNING ===
+2026-04-07 17:12:56,648 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:12:59,177 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:13:14,179 [INFO] test_agents —   task_type      : qa
+2026-04-07 17:13:14,180 [INFO] test_agents —   language       : vi
+2026-04-07 17:13:14,180 [INFO] test_agents —   intent_summary : Người dùng muốn biết định nghĩa sóng cơ học và cách phân loại sóng ngang, sóng dọc.
+2026-04-07 17:13:14,180 [INFO] test_agents —   context_needed : sóng cơ học, định nghĩa sóng cơ học, sóng ngang, sóng dọc, phân loại sóng
+2026-04-07 17:13:14,180 [INFO] test_agents —     step: Bước 1: Sử dụng tác nhân truy xuất để tìm kiếm thông tin về 'sóng cơ học' để định nghĩa nó.
+2026-04-07 17:13:14,180 [INFO] test_agents —     step: Bước 2: Sử dụng tác nhân truy xuất để tìm kiếm thông tin về 'sóng ngang' và 'sóng dọc' để mô tả và phân loại chúng.
+2026-04-07 17:13:14,180 [INFO] test_agents —     step: Bước 3: Tổng hợp thông tin từ các bước trên để trả lời câu hỏi của người dùng một cách rõ ràng và đầy đủ.
+2026-04-07 17:13:14,181 [INFO] test_agents — 
+--- Query 2/4: Công thức tính bước sóng và tần số là gì?
+2026-04-07 17:13:14,181 [INFO] knowgen.supervisor — === SUPERVISOR AGENT RUNNING ===
+2026-04-07 17:13:14,182 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:13:17,157 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:13:32,159 [INFO] test_agents —   task_type      : qa
+2026-04-07 17:13:32,160 [INFO] test_agents —   language       : vi
+2026-04-07 17:13:32,160 [INFO] test_agents —   intent_summary : Người dùng muốn biết công thức tính bước sóng và tần số.
+2026-04-07 17:13:32,160 [INFO] test_agents —   context_needed : công thức tính bước sóng, công thức tính tần số, wavelength formula, frequency formula
+2026-04-07 17:13:32,160 [INFO] test_agents —     step: Bước 1: Sử dụng công cụ truy xuất tài liệu để tìm kiếm các công thức liên quan đến bước sóng và tần số.
+2026-04-07 17:13:32,160 [INFO] test_agents —     step: Bước 2: Trích xuất các công thức tính bước sóng và tần số từ các tài liệu đã tìm thấy.
+2026-04-07 17:13:32,160 [INFO] test_agents —     step: Bước 3: Trình bày các công thức tính bước sóng và tần số cho người dùng.
+2026-04-07 17:13:32,160 [INFO] test_agents — 
+--- Query 3/4: Những đặc điểm chính của CNXH khoa học là gì?
+2026-04-07 17:13:32,160 [INFO] knowgen.supervisor — === SUPERVISOR AGENT RUNNING ===
+2026-04-07 17:13:32,161 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:13:35,193 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:13:50,195 [INFO] test_agents —   task_type      : qa
+2026-04-07 17:13:50,196 [INFO] test_agents —   language       : vi
+2026-04-07 17:13:50,196 [INFO] test_agents —   intent_summary : Người dùng muốn biết những đặc điểm chính của Chủ nghĩa xã hội khoa học.
+2026-04-07 17:13:50,196 [INFO] test_agents —   context_needed : Chủ nghĩa xã hội khoa học, đặc điểm, tính chất, nguyên lý, bản chất
+2026-04-07 17:13:50,196 [INFO] test_agents —     step: Bước 1: Sử dụng tác nhân truy xuất để tìm các tài liệu liên quan đến 'Chủ nghĩa xã hội khoa học' và 'đặc điểm chính' của nó.
+2026-04-07 17:13:50,196 [INFO] test_agents —     step: Bước 2: Tác nhân QA sẽ đọc và tổng hợp các đặc điểm chính từ các đoạn văn bản được truy xuất.
+2026-04-07 17:13:50,196 [INFO] test_agents —     step: Bước 3: Tác nhân QA sẽ tạo ra một câu trả lời cô đọng liệt kê các đặc điểm chính của Chủ nghĩa xã hội khoa học.
+2026-04-07 17:13:50,197 [INFO] test_agents — 
+--- Query 4/4: Tạo 5 câu hỏi trắc nghiệm về sóng cơ học.
+2026-04-07 17:13:50,197 [INFO] knowgen.supervisor — === SUPERVISOR AGENT RUNNING ===
+2026-04-07 17:13:50,198 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:13:52,903 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:14:07,904 [INFO] test_agents —   task_type      : quiz
+2026-04-07 17:14:07,905 [INFO] test_agents —   language       : vi
+2026-04-07 17:14:07,905 [INFO] test_agents —   intent_summary : Người dùng muốn tạo 5 câu hỏi trắc nghiệm về sóng cơ học.
+2026-04-07 17:14:07,905 [INFO] test_agents —   context_needed : sóng cơ học, cơ học, sóng, đặc điểm sóng cơ học, phương trình sóng, tốc độ truyền sóng
+2026-04-07 17:14:07,906 [INFO] test_agents —     step: Step 1: Sử dụng tác nhân truy xuất để tìm kiếm và thu thập thông tin liên quan đến 'sóng cơ học' từ cơ sở tri thức cục bộ.
+2026-04-07 17:14:07,906 [INFO] test_agents —     step: Step 2: Gửi thông tin đã truy xuất đến tác nhân tạo câu hỏi để tạo ra 5 câu hỏi trắc nghiệm về 'sóng cơ học'.
+2026-04-07 17:14:07,906 [INFO] test_agents —     step: Step 3: Trình bày các câu hỏi trắc nghiệm đã tạo cho người dùng.
+2026-04-07 17:14:07,906 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:07,906 [INFO] test_agents — STEP 3: TESTING RETRIEVER AGENT
+2026-04-07 17:14:07,907 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:08,539 [INFO] knowgen.retriever — Loading embedding model: intfloat/multilingual-e5-base
+2026-04-07 17:14:08,541 [INFO] sentence_transformers.SentenceTransformer — Use pytorch device_name: cpu
+2026-04-07 17:14:08,542 [INFO] sentence_transformers.SentenceTransformer — Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+2026-04-07 17:14:13,246 [INFO] knowgen.retriever — Loading FAISS index from: D:\KnowGen-Project\backend\vector_store\faiss_index
+2026-04-07 17:14:13,247 [INFO] knowgen.retriever — FAISS index loaded successfully
+2026-04-07 17:14:13,873 [INFO] knowgen.retriever — Loading embedding model: intfloat/multilingual-e5-base
+2026-04-07 17:14:13,875 [INFO] sentence_transformers.SentenceTransformer — Use pytorch device_name: cpu
+2026-04-07 17:14:13,875 [INFO] sentence_transformers.SentenceTransformer — Load pretrained SentenceTransformer: intfloat/multilingual-e5-base
+2026-04-07 17:14:18,239 [INFO] knowgen.retriever — Loading FAISS index from: D:\KnowGen-Project\backend\vector_store\faiss_index
+2026-04-07 17:14:18,242 [INFO] knowgen.retriever — FAISS index loaded successfully
+2026-04-07 17:14:18,242 [INFO] test_agents — 
+--- Query 1/4: Sóng cơ học là gì? Phân loại sóng ngang và sóng dọc.
+2026-04-07 17:14:18,244 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:14:21,781 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:14:21,783 [INFO] knowgen.retriever — Query rewritten: 'Sóng cơ học là gì? Phân loại sóng ngang …' (52 chars) → 'sóng cơ học định nghĩa khái niệm bản chấ…' (298 chars)
+2026-04-07 17:14:21,784 [INFO] knowgen.retriever — Searching 20 candidates…
+2026-04-07 17:14:21,897 [INFO] knowgen.retriever — Found 20 candidates
+2026-04-07 17:14:21,897 [INFO] knowgen.retriever — Doc-relevance gate: 1/1 doc(s) passed, 20/20 chunks retained.
+2026-04-07 17:14:22,009 [INFO] knowgen.retriever — After ranking & filtering: 5 documents
+2026-04-07 17:14:22,009 [INFO] knowgen.retriever — Retrieval complete: 5 docs, 5 evidence items
+2026-04-07 17:14:22,009 [INFO] test_agents —   [REWRITTEN QUERY]
+2026-04-07 17:14:22,009 [INFO] test_agents —   sóng cơ học định nghĩa khái niệm bản chất vật lý dao động truyền sóng phân loại sóng ngang sóng dọc định nghĩa sóng ngang định nghĩa sóng dọc đặc điểm sóng ngang tính chất sóng ngang đặc điểm sóng dọc tính chất sóng dọc so sánh sóng ngang sóng dọc khác biệt sóng ngang sóng dọc các loại sóng cơ học
+2026-04-07 17:14:22,009 [INFO] test_agents —   [RETRIEVAL STRATEGY]
+2026-04-07 17:14:22,010 [INFO] test_agents —   total_retrieved    : 5
+2026-04-07 17:14:22,010 [INFO] test_agents —   top_k              : 5
+2026-04-07 17:14:22,010 [INFO] test_agents —   confidence_threshold: 0.55
+2026-04-07 17:14:22,010 [INFO] test_agents —   ranking_signals    : ['similarity', 'source_type', 'chunk_position']
+2026-04-07 17:14:22,010 [INFO] test_agents —   sources            : ['pdf']
+2026-04-07 17:14:22,010 [INFO] test_agents —   [RETRIEVED DOCS] — 5 document(s)
+2026-04-07 17:14:22,011 [INFO] test_agents —   ---- Doc 1/5 ----
+2026-04-07 17:14:22,011 [INFO] test_agents —   similarity_score : 0.8672
+2026-04-07 17:14:22,011 [INFO] test_agents —   header_path      : **1. sóng cơ và sự truyền sóng cơ**
+2026-04-07 17:14:22,011 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:22,011 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:22,011 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:22,011 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:22,012 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:22,012 [INFO] test_agents —     | passage: ## **1. sóng cơ và sự truyền sóng cơ**  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | - sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | - người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | + sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | **==> picture [263 x 197] intentionally omitted <==**  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | + sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương truyền sóng.  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | **- sóng ngang** chỉ truyền trong **chất rắn** và **bề mặt** của chất lỏng. **sóng dọc** truyền được cả trong **chất rắn, lỏng, khí** . sóng cơ không truyền được trong chân không.  
+2026-04-07 17:14:22,012 [INFO] test_agents —     | - sóng cơ được tạo thành và lan truyền trong môi trường vật chất **nhờ lực liên kết đàn hồi** giữa các phân tử của môi trường truyền dao động.
+2026-04-07 17:14:22,012 [INFO] test_agents —   ---- Doc 2/5 ----
+2026-04-07 17:14:22,013 [INFO] test_agents —   similarity_score : 0.8081
+2026-04-07 17:14:22,013 [INFO] test_agents —   header_path      : **a. chu kỳ, tần số**
+2026-04-07 17:14:22,013 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:22,013 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:22,013 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:22,013 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:22,013 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:22,013 [INFO] test_agents —     | passage: ## **a. chu kỳ, tần số**  
+2026-04-07 17:14:22,013 [INFO] test_agents —     | tất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.
+2026-04-07 17:14:22,014 [INFO] test_agents —   ---- Doc 3/5 ----
+2026-04-07 17:14:22,014 [INFO] test_agents —   similarity_score : 0.8038
+2026-04-07 17:14:22,014 [INFO] test_agents —   header_path      : **d. tốc độ truyền sóng**
+2026-04-07 17:14:22,014 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:22,014 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:22,014 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:22,014 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:22,015 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:22,015 [INFO] test_agents —     | passage: ## **d. tốc độ truyền sóng**  
+2026-04-07 17:14:22,015 [INFO] test_agents —     | - trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  
+2026-04-07 17:14:22,015 [INFO] test_agents —     | **==> picture [58 x 30] intentionally omitted <==**  
+2026-04-07 17:14:22,015 [INFO] test_agents —     | - **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  
+2026-04-07 17:14:22,015 [INFO] test_agents —     | - của các phần tử vật chất.  
+2026-04-07 17:14:22,015 [INFO] test_agents —     | - trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ quanh vị trí cân bằng của nó.
+2026-04-07 17:14:22,015 [INFO] test_agents —   ---- Doc 4/5 ----
+2026-04-07 17:14:22,016 [INFO] test_agents —   similarity_score : 0.8018
+2026-04-07 17:14:22,016 [INFO] test_agents —   header_path      : **b. biên độ sóng**
+2026-04-07 17:14:22,016 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:22,016 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:22,016 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:22,016 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:22,016 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:22,016 [INFO] test_agents —     | passage: ## **b. biên độ sóng**  
+2026-04-07 17:14:22,016 [INFO] test_agents —     | - biên độ dao động của phần tử môi trường tại một điểm được gọi là biên độ sóng tại điểm đó.  
+2026-04-07 17:14:22,016 [INFO] test_agents —     | - trong thực tế càng xa tâm dao động thì biên độ sóng càng nhỏ.  
+2026-04-07 17:14:22,017 [INFO] test_agents —     | e-mail: mr.taie1987@gmail.com 1 /9 mobile: 0965.147.898  
+2026-04-07 17:14:22,017 [INFO] test_agents —     | taiª facebook.com/mr.dong1987
+2026-04-07 17:14:22,017 [INFO] test_agents —   ---- Doc 5/5 ----
+2026-04-07 17:14:22,017 [INFO] test_agents —   similarity_score : 0.7962
+2026-04-07 17:14:22,017 [INFO] test_agents —   header_path      : **1. sóng âm**
+2026-04-07 17:14:22,017 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:22,017 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:22,017 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:22,017 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:22,018 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:22,018 [INFO] test_agents —     | passage: ## **1. sóng âm**  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | - sóng âm là những sóng cơ học lan truyền trong môi trường rắn, lỏng, khí. sóng âm mà con người nghe được có tần số từ 16hz đến 20000hz gọi là âm nghe được ( **âm thanh)** .  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | - những sóng cơ học tần số nhỏ hơn 16hz gọi là sóng hạ âm. sóng này tai con người không nghe được, tuy nhiên một số loài vật như voi, chim bồ câu, … có thể “nghe” được.  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | - những sóng cơ học tần số lớn hơn 20000hz gọi là sóng siêu âm. sóng này tai con người cũng không nghe được, một số loài động vật như dơi, chó, cá heo, … có thể “nghe” được.  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | - **trong chất lỏng và khí** sóng âm là sóng dọc, **còn trong chất rắn** sóng âm gồm cả sóng dọc và sóng ngang.  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | - sóng âm **truyền được** trong chất rắn, lỏng, khí, **không truyền được** trong chân không.  
+2026-04-07 17:14:22,018 [INFO] test_agents —     | **==> picture [223 x 343] intentionally omitted <==**  
+2026-04-07 17:14:22,019 [INFO] test_agents —     | - tốc độ truyền âm **phụ thuộc bản chất** (mật độ và tính đàn hồi) của môi trường. **nói chung:** vrắn>vlỏng>vkhí. vận tốc truyền âm còn **thay đổi theo nhiệt độ** .  
+2026-04-07 17:14:22,019 [INFO] test_agents —     | **lưu ý:** các kết luận về sóng cơ đều có thể áp dụng cho sóng âm (phương trình sóng, các đại lương đặc trưng của sóng, giao thoa, sóng dừng, nhiễu xạ, phản xạ, khúc xạ).
+2026-04-07 17:14:22,019 [INFO] test_agents —   [EVIDENCE SUMMARY] — 5 item(s)
+2026-04-07 17:14:22,019 [INFO] test_agents —   1. passage: ## **1
+2026-04-07 17:14:22,019 [INFO] test_agents —   2. passage: ## **a
+2026-04-07 17:14:22,019 [INFO] test_agents —   3. passage: ## **d
+2026-04-07 17:14:22,019 [INFO] test_agents —   4. passage: ## **b
+2026-04-07 17:14:22,019 [INFO] test_agents —   5. passage: ## **1
+2026-04-07 17:14:22,020 [INFO] test_agents — 
+--- Query 2/4: Công thức tính bước sóng và tần số là gì?
+2026-04-07 17:14:22,022 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:14:25,793 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:14:25,795 [INFO] knowgen.retriever — Query rewritten: 'Công thức tính bước sóng và tần số là gì…' (41 chars) → 'Công thức tính bước sóng tần số phương t…' (173 chars)
+2026-04-07 17:14:25,796 [INFO] knowgen.retriever — Searching 20 candidates…
+2026-04-07 17:14:25,872 [INFO] knowgen.retriever — Found 20 candidates
+2026-04-07 17:14:25,872 [INFO] knowgen.retriever — Doc-relevance gate: 1/1 doc(s) passed, 20/20 chunks retained.
+2026-04-07 17:14:25,999 [INFO] knowgen.retriever — After ranking & filtering: 5 documents
+2026-04-07 17:14:26,000 [INFO] knowgen.retriever — Retrieval complete: 5 docs, 5 evidence items
+2026-04-07 17:14:26,000 [INFO] test_agents —   [REWRITTEN QUERY]
+2026-04-07 17:14:26,000 [INFO] test_agents —   Công thức tính bước sóng tần số phương trình biểu thức định nghĩa cách tính xác định độ dài sóng wavelength tần suất frequency vật lý sóng dao động ánh sáng âm thanh điện từ
+2026-04-07 17:14:26,000 [INFO] test_agents —   [RETRIEVAL STRATEGY]
+2026-04-07 17:14:26,001 [INFO] test_agents —   total_retrieved    : 5
+2026-04-07 17:14:26,001 [INFO] test_agents —   top_k              : 5
+2026-04-07 17:14:26,001 [INFO] test_agents —   confidence_threshold: 0.55
+2026-04-07 17:14:26,001 [INFO] test_agents —   ranking_signals    : ['similarity', 'source_type', 'chunk_position']
+2026-04-07 17:14:26,001 [INFO] test_agents —   sources            : ['pdf']
+2026-04-07 17:14:26,001 [INFO] test_agents —   [RETRIEVED DOCS] — 5 document(s)
+2026-04-07 17:14:26,001 [INFO] test_agents —   ---- Doc 1/5 ----
+2026-04-07 17:14:26,002 [INFO] test_agents —   similarity_score : 0.8192
+2026-04-07 17:14:26,002 [INFO] test_agents —   header_path      : **3. phương trình sóng**
+2026-04-07 17:14:26,002 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:26,002 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:26,002 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:26,002 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:26,002 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:26,002 [INFO] test_agents —     | passage: ## **3. phương trình sóng**  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | - phương trình sóng là phương trình xác định **li độ u** của mỗi phần tử của môi trường tại điểm có **tọa độ x** vào một **thời điểm t** bất kỳ.  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | - sóng truyền **từ nguồn** qua m, qua  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | o và đến n theo chiều _[v]_[] , giả sử biểu thức sóng tại o có dạng: _uo_  _a_ cos(  _t_  ) , thì:  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | **==> picture [290 x 30] intentionally omitted <==**  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | **==> picture [288 x 30] intentionally omitted <==**  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | e-mail: mr.taie1987@gmail.com 2 /9 mobile: 0965.147.898  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | taiª facebook.com/mr.dong1987  
+2026-04-07 17:14:26,003 [INFO] test_agents —     | **hệ quả:  độ lệch pha** của 2 điểm **trên một phương** truyền sóng cách nhau một đoạn **d** :  
+2026-04-07 17:14:26,004 [INFO] test_agents —     | **==> picture [282 x 51] intentionally omitted <==**  
+2026-04-07 17:14:26,004 [INFO] test_agents —     |    m, n ngược pha:   2 _k_  1   hay _d_   2 _k_  1  2     m, n vuông pha:    2 _k_  1  hay _d_   2 _k_  1  2 4
+2026-04-07 17:14:26,004 [INFO] test_agents —   ---- Doc 2/5 ----
+2026-04-07 17:14:26,004 [INFO] test_agents —   similarity_score : 0.8041
+2026-04-07 17:14:26,004 [INFO] test_agents —   header_path      : **a. chu kỳ, tần số**
+2026-04-07 17:14:26,004 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:26,004 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:26,004 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:26,004 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:26,005 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:26,005 [INFO] test_agents —     | passage: ## **a. chu kỳ, tần số**  
+2026-04-07 17:14:26,005 [INFO] test_agents —     | tất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.
+2026-04-07 17:14:26,005 [INFO] test_agents —   ---- Doc 3/5 ----
+2026-04-07 17:14:26,005 [INFO] test_agents —   similarity_score : 0.8026
+2026-04-07 17:14:26,005 [INFO] test_agents —   header_path      : **d. tốc độ truyền sóng**
+2026-04-07 17:14:26,005 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:26,006 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:26,006 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:26,006 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:26,006 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:26,006 [INFO] test_agents —     | passage: ## **d. tốc độ truyền sóng**  
+2026-04-07 17:14:26,006 [INFO] test_agents —     | - trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  
+2026-04-07 17:14:26,006 [INFO] test_agents —     | **==> picture [58 x 30] intentionally omitted <==**  
+2026-04-07 17:14:26,006 [INFO] test_agents —     | - **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  
+2026-04-07 17:14:26,006 [INFO] test_agents —     | - của các phần tử vật chất.  
+2026-04-07 17:14:26,006 [INFO] test_agents —     | - trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ quanh vị trí cân bằng của nó.
+2026-04-07 17:14:26,007 [INFO] test_agents —   ---- Doc 4/5 ----
+2026-04-07 17:14:26,007 [INFO] test_agents —   similarity_score : 0.8011
+2026-04-07 17:14:26,007 [INFO] test_agents —   header_path      : **2. các đại lượng đặc trưng của chuyển động sóng**
+2026-04-07 17:14:26,007 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:26,007 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:26,007 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:26,007 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:26,007 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:26,007 [INFO] test_agents —     | passage: ## **2. các đại lượng đặc trưng của chuyển động sóng**
+2026-04-07 17:14:26,008 [INFO] test_agents —   ---- Doc 5/5 ----
+2026-04-07 17:14:26,008 [INFO] test_agents —   similarity_score : 0.7991
+2026-04-07 17:14:26,008 [INFO] test_agents —   header_path      : **c. bước sóng**
+2026-04-07 17:14:26,008 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:26,008 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:26,008 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:26,008 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:26,009 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:26,009 [INFO] test_agents —     | passage: ## **c. bước sóng**  
+2026-04-07 17:14:26,009 [INFO] test_agents —     | có hai định nghĩa bước sóng:  
+2026-04-07 17:14:26,009 [INFO] test_agents —     | **- bước sóng** là khoảng cách giữa hai điểm gần nhau nhất trên một phương truyền sóng dao động cùng pha.  
+2026-04-07 17:14:26,009 [INFO] test_agents —     | **- bước sóng** là quãng đường mà sóng truyền đi được trong một chu kỳ dao động.  
+2026-04-07 17:14:26,009 [INFO] test_agents —     | **==> picture [197 x 92] intentionally omitted <==**  
+2026-04-07 17:14:26,009 [INFO] test_agents —     | bước sóng **ký hiệu** là lamda (  ). đơn vị là **mét** (m).
+2026-04-07 17:14:26,009 [INFO] test_agents —   [EVIDENCE SUMMARY] — 5 item(s)
+2026-04-07 17:14:26,009 [INFO] test_agents —   1. passage: ## **3
+2026-04-07 17:14:26,009 [INFO] test_agents —   2. passage: ## **a
+2026-04-07 17:14:26,010 [INFO] test_agents —   3. passage: ## **d
+2026-04-07 17:14:26,010 [INFO] test_agents —   4. passage: ## **2
+2026-04-07 17:14:26,010 [INFO] test_agents —   5. passage: ## **c
+2026-04-07 17:14:26,010 [INFO] test_agents — 
+--- Query 3/4: Những đặc điểm chính của CNXH khoa học là gì?
+2026-04-07 17:14:26,011 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:14:29,556 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:14:29,558 [INFO] knowgen.retriever — Query rewritten: 'Những đặc điểm chính của CNXH khoa học l…' (45 chars) → 'Chủ nghĩa Xã hội khoa học đặc điểm chính…' (182 chars)
+2026-04-07 17:14:29,558 [INFO] knowgen.retriever — Searching 20 candidates…
+2026-04-07 17:14:29,624 [INFO] knowgen.retriever — Found 20 candidates
+2026-04-07 17:14:29,624 [INFO] knowgen.retriever — Doc-relevance gate: 1/1 doc(s) passed, 20/20 chunks retained.
+2026-04-07 17:14:29,729 [INFO] knowgen.retriever — After ranking & filtering: 5 documents
+2026-04-07 17:14:29,729 [INFO] knowgen.retriever — Retrieval complete: 5 docs, 5 evidence items
+2026-04-07 17:14:29,729 [INFO] test_agents —   [REWRITTEN QUERY]
+2026-04-07 17:14:29,729 [INFO] test_agents —   Chủ nghĩa Xã hội khoa học đặc điểm chính tính chất nguyên lý bản chất thuộc tính dấu hiệu khía cạnh cơ bản cốt lõi nền tảng nguyên tắc tiêu chí định nghĩa khái niệm lý luận Mác-Lênin
+2026-04-07 17:14:29,729 [INFO] test_agents —   [RETRIEVAL STRATEGY]
+2026-04-07 17:14:29,730 [INFO] test_agents —   total_retrieved    : 5
+2026-04-07 17:14:29,730 [INFO] test_agents —   top_k              : 5
+2026-04-07 17:14:29,730 [INFO] test_agents —   confidence_threshold: 0.55
+2026-04-07 17:14:29,730 [INFO] test_agents —   ranking_signals    : ['similarity', 'source_type', 'chunk_position']
+2026-04-07 17:14:29,730 [INFO] test_agents —   sources            : ['pdf']
+2026-04-07 17:14:29,730 [INFO] test_agents —   [RETRIEVED DOCS] — 5 document(s)
+2026-04-07 17:14:29,730 [INFO] test_agents —   ---- Doc 1/5 ----
+2026-04-07 17:14:29,730 [INFO] test_agents —   similarity_score : 0.7271
+2026-04-07 17:14:29,730 [INFO] test_agents —   header_path      : **2. các đại lượng đặc trưng của chuyển động sóng**
+2026-04-07 17:14:29,730 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:29,730 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:29,730 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:29,731 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:29,731 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:29,731 [INFO] test_agents —     | passage: ## **2. các đại lượng đặc trưng của chuyển động sóng**
+2026-04-07 17:14:29,731 [INFO] test_agents —   ---- Doc 2/5 ----
+2026-04-07 17:14:29,731 [INFO] test_agents —   similarity_score : 0.7188
+2026-04-07 17:14:29,731 [INFO] test_agents —   header_path      : **b. âm sắc**
+2026-04-07 17:14:29,731 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:29,731 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:29,731 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:29,731 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:29,731 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:29,731 [INFO] test_agents —     | passage: ## **b. âm sắc**  
+2026-04-07 17:14:29,732 [INFO] test_agents —     | - khi một nhạc cụ phát ra một âm có tần số f, thì nó đồng thời phát ra các âm có tần số 2f, 3f, 4f, ..., nf. âm có tần số f gọi là âm cơ bản, các âm có tần số 2f, 3f, 4f, ... gọi là các họa âm bậc 2, bậc 3, bậc 4, ... âm mà chúng ta nghe được từ nhạc cụ chính là sự tổng hợp của âm cơ bản và các họa âm. các nhạc cụ khác nhau cùng tấu lên một đoạn nhạc ở cùng độ cao nhưng chúng ta vẫn phân biệt được tiếng của từng nhạc cụ. khi nghiên cứu đồ thị dao động của chúng chúng ta thấy chúng có dạng khác nhau, do đó sóng âm tác động vào màng nhĩ của chúng ta theo những kiểu khác nhau, nên chúng ta thấy các âm đó có sắc thái khác nhau. đặc tính đó gọi là âm sắc.  
+2026-04-07 17:14:29,732 [INFO] test_agents —     | - **âm sắc khác nhau** khi **dạng đồ thị** dao động của âm **khác nhau** .  
+2026-04-07 17:14:29,732 [INFO] test_agents —     | - âm sắc là đặc tính sinh lý của âm phụ thuộc các đặc tính vật lý là **tần số** và **biên độ** .
+2026-04-07 17:14:29,732 [INFO] test_agents —   ---- Doc 3/5 ----
+2026-04-07 17:14:29,732 [INFO] test_agents —   similarity_score : 0.7176
+2026-04-07 17:14:29,732 [INFO] test_agents —   header_path      : **1. hai sóng kết hợp**
+2026-04-07 17:14:29,732 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:29,732 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:29,732 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:29,732 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:29,732 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:29,732 [INFO] test_agents —     | passage: ## **1. hai sóng kết hợp**  
+2026-04-07 17:14:29,732 [INFO] test_agents —     |  hai nguồn **sóng kết hợp** là hai nguồn:  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | + dao động cùng phương  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | + cùng tần số  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | + độ lệch pha không đổi theo thời gian.  
+2026-04-07 17:14:29,733 [INFO] test_agents —     |  **hai sóng kết hợp** là hai sóng do hai nguồn sóng kết hợp phát ra.  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | **2. hiện tượng giao thoa của hai sóng mặt nước. cực đại và cực tiểu**  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | hiện tượng hai sóng kết hợp gặp nhau tạo nên các gợn sóng ổn định gọi là hiện tượng giao thoa của hai sóng. các gợn sóng có hình các đường hypebol gọi là các vân giao thoa.  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | + giao thoa là hiện tượng đặc trưng của sóng nên ta có thể nói rằng: “nơi nào có giao thoa thì nơi đó có sóng và nơi có sóng chưa chắc đã có giao thoa (vì chưa biết chúng có **kết hợp không???** ”.  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | + khi có hiện tượng giao thoa sóng thì trong môi trường có giao thoa xuất hiện những điểm ở đó chúng luôn dao động với biên độ lớn nhất gọi là các điểm **cực đại** giao thoa (cđ), và xen kẽ là những điểm ở đó chúng luôn dao động với biên độ bé nhất gọi là các điểm **cực tiểu** giao thoa (ct).  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | **==> picture [208 x 142] intentionally omitted <==**  
+2026-04-07 17:14:29,733 [INFO] test_agents —     | e-mail: mr.taie1987@gmail.com 3 /9 mobile: 0965.147.898  
+2026-04-07 17:14:29,734 [INFO] test_agents —     | taiª facebook.com/mr.dong1987
+2026-04-07 17:14:29,734 [INFO] test_agents —   ---- Doc 4/5 ----
+2026-04-07 17:14:29,734 [INFO] test_agents —   similarity_score : 0.7163
+2026-04-07 17:14:29,734 [INFO] test_agents —   header_path      : 3. những đặc trưng của âm
+2026-04-07 17:14:29,734 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:29,734 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:29,734 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:29,734 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:29,734 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:29,734 [INFO] test_agents —     | passage: ## 3. những đặc trưng của âm  
+2026-04-07 17:14:29,734 [INFO] test_agents —     | các đặc trưng vật lý của âm (tần số, cường độ âm, mức cường độ âm, đồ thị dao động) gây ra một loạt cảm giác riêng, gọi là các đặc trưng sinh lý của âm (độ cao, độ to, âm sắc). những đặc trưng sinh lý liên quan chặt chẽ với những đặc trưng vật lý của âm.  
+2026-04-07 17:14:29,735 [INFO] test_agents —     | e-mail: mr.taie1987@gmail.com 6 /9 mobile: 0965.147.898  
+2026-04-07 17:14:29,735 [INFO] test_agents —     | taiª facebook.com/mr.dong1987
+2026-04-07 17:14:29,735 [INFO] test_agents —   ---- Doc 5/5 ----
+2026-04-07 17:14:29,735 [INFO] test_agents —   similarity_score : 0.7160
+2026-04-07 17:14:29,735 [INFO] test_agents —   header_path      : **1. sóng cơ và sự truyền sóng cơ**
+2026-04-07 17:14:29,735 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:29,735 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:29,735 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:29,735 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:29,735 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:29,736 [INFO] test_agents —     | passage: ## **1. sóng cơ và sự truyền sóng cơ**  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | - sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | - người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | + sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | **==> picture [263 x 197] intentionally omitted <==**  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | + sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương truyền sóng.  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | **- sóng ngang** chỉ truyền trong **chất rắn** và **bề mặt** của chất lỏng. **sóng dọc** truyền được cả trong **chất rắn, lỏng, khí** . sóng cơ không truyền được trong chân không.  
+2026-04-07 17:14:29,736 [INFO] test_agents —     | - sóng cơ được tạo thành và lan truyền trong môi trường vật chất **nhờ lực liên kết đàn hồi** giữa các phân tử của môi trường truyền dao động.
+2026-04-07 17:14:29,736 [INFO] test_agents —   [EVIDENCE SUMMARY] — 5 item(s)
+2026-04-07 17:14:29,736 [INFO] test_agents —   1. passage: ## **2
+2026-04-07 17:14:29,737 [INFO] test_agents —   2. passage: ## **b
+2026-04-07 17:14:29,737 [INFO] test_agents —   3. passage: ## **1
+2026-04-07 17:14:29,737 [INFO] test_agents —   4. passage: ## 3
+2026-04-07 17:14:29,737 [INFO] test_agents —   5. passage: ## **1
+2026-04-07 17:14:29,737 [INFO] test_agents — 
+--- Query 4/4: Tạo 5 câu hỏi trắc nghiệm về sóng cơ học.
+2026-04-07 17:14:29,739 [INFO] google_genai.models — AFC is enabled with max remote calls: 10.
+2026-04-07 17:14:34,957 [INFO] httpx — HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-04-07 17:14:34,958 [INFO] knowgen.retriever — Query rewritten: 'Tạo 5 câu hỏi trắc nghiệm về sóng cơ học…' (41 chars) → 'sóng cơ học định nghĩa khái niệm đặc điể…' (316 chars)
+2026-04-07 17:14:34,959 [INFO] knowgen.retriever — Searching 20 candidates…
+2026-04-07 17:14:35,042 [INFO] knowgen.retriever — Found 20 candidates
+2026-04-07 17:14:35,043 [INFO] knowgen.retriever — Doc-relevance gate: 1/1 doc(s) passed, 20/20 chunks retained.
+2026-04-07 17:14:35,164 [INFO] knowgen.retriever — After ranking & filtering: 5 documents
+2026-04-07 17:14:35,164 [INFO] knowgen.retriever — Retrieval complete: 5 docs, 5 evidence items
+2026-04-07 17:14:35,164 [INFO] test_agents —   [REWRITTEN QUERY]
+2026-04-07 17:14:35,164 [INFO] test_agents —   sóng cơ học định nghĩa khái niệm đặc điểm tính chất phân loại phương trình sóng công thức biểu thức tốc độ truyền sóng vận tốc lan truyền môi trường đàn hồi vật lý cơ học dao động sóng ngang sóng dọc bước sóng chu kỳ tần số biên độ pha năng lượng cường độ giao thoa nhiễu xạ phản xạ khúc xạ sóng dừng hiện tượng sóng
+2026-04-07 17:14:35,164 [INFO] test_agents —   [RETRIEVAL STRATEGY]
+2026-04-07 17:14:35,165 [INFO] test_agents —   total_retrieved    : 5
+2026-04-07 17:14:35,165 [INFO] test_agents —   top_k              : 5
+2026-04-07 17:14:35,165 [INFO] test_agents —   confidence_threshold: 0.55
+2026-04-07 17:14:35,165 [INFO] test_agents —   ranking_signals    : ['similarity', 'source_type', 'chunk_position']
+2026-04-07 17:14:35,166 [INFO] test_agents —   sources            : ['pdf']
+2026-04-07 17:14:35,166 [INFO] test_agents —   [RETRIEVED DOCS] — 5 document(s)
+2026-04-07 17:14:35,166 [INFO] test_agents —   ---- Doc 1/5 ----
+2026-04-07 17:14:35,166 [INFO] test_agents —   similarity_score : 0.8378
+2026-04-07 17:14:35,166 [INFO] test_agents —   header_path      : **1. sóng cơ và sự truyền sóng cơ**
+2026-04-07 17:14:35,166 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:35,166 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:35,166 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:35,167 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:35,167 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:35,167 [INFO] test_agents —     | passage: ## **1. sóng cơ và sự truyền sóng cơ**  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | - sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | - người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | + sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | **==> picture [263 x 197] intentionally omitted <==**  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | + sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương truyền sóng.  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | **- sóng ngang** chỉ truyền trong **chất rắn** và **bề mặt** của chất lỏng. **sóng dọc** truyền được cả trong **chất rắn, lỏng, khí** . sóng cơ không truyền được trong chân không.  
+2026-04-07 17:14:35,167 [INFO] test_agents —     | - sóng cơ được tạo thành và lan truyền trong môi trường vật chất **nhờ lực liên kết đàn hồi** giữa các phân tử của môi trường truyền dao động.
+2026-04-07 17:14:35,167 [INFO] test_agents —   ---- Doc 2/5 ----
+2026-04-07 17:14:35,168 [INFO] test_agents —   similarity_score : 0.8532
+2026-04-07 17:14:35,168 [INFO] test_agents —   header_path      : —
+2026-04-07 17:14:35,168 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:35,168 [INFO] test_agents —   role             : summary
+2026-04-07 17:14:35,168 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:35,168 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:35,168 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:35,168 [INFO] test_agents —     | passage: Summary of a.thuvienvatly.com.2160e.47524.pdf:
+2026-04-07 17:14:35,168 [INFO] test_agents —     | Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.
+2026-04-07 17:14:35,168 [INFO] test_agents —   ---- Doc 3/5 ----
+2026-04-07 17:14:35,168 [INFO] test_agents —   similarity_score : 0.8274
+2026-04-07 17:14:35,168 [INFO] test_agents —   header_path      : **d. tốc độ truyền sóng**
+2026-04-07 17:14:35,168 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:35,168 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:35,168 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:35,168 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:35,169 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:35,169 [INFO] test_agents —     | passage: ## **d. tốc độ truyền sóng**  
+2026-04-07 17:14:35,169 [INFO] test_agents —     | - trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  
+2026-04-07 17:14:35,169 [INFO] test_agents —     | **==> picture [58 x 30] intentionally omitted <==**  
+2026-04-07 17:14:35,169 [INFO] test_agents —     | - **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  
+2026-04-07 17:14:35,169 [INFO] test_agents —     | - của các phần tử vật chất.  
+2026-04-07 17:14:35,169 [INFO] test_agents —     | - trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ quanh vị trí cân bằng của nó.
+2026-04-07 17:14:35,170 [INFO] test_agents —   ---- Doc 4/5 ----
+2026-04-07 17:14:35,170 [INFO] test_agents —   similarity_score : 0.8234
+2026-04-07 17:14:35,170 [INFO] test_agents —   header_path      : **3. phương trình sóng**
+2026-04-07 17:14:35,170 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:35,170 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:35,170 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:35,170 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:35,170 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:35,171 [INFO] test_agents —     | passage: ## **3. phương trình sóng**  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | - phương trình sóng là phương trình xác định **li độ u** của mỗi phần tử của môi trường tại điểm có **tọa độ x** vào một **thời điểm t** bất kỳ.  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | - sóng truyền **từ nguồn** qua m, qua  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | o và đến n theo chiều _[v]_[] , giả sử biểu thức sóng tại o có dạng: _uo_  _a_ cos(  _t_  ) , thì:  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | **==> picture [290 x 30] intentionally omitted <==**  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | **==> picture [288 x 30] intentionally omitted <==**  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | e-mail: mr.taie1987@gmail.com 2 /9 mobile: 0965.147.898  
+2026-04-07 17:14:35,171 [INFO] test_agents —     | taiª facebook.com/mr.dong1987  
+2026-04-07 17:14:35,172 [INFO] test_agents —     | **hệ quả:  độ lệch pha** của 2 điểm **trên một phương** truyền sóng cách nhau một đoạn **d** :  
+2026-04-07 17:14:35,172 [INFO] test_agents —     | **==> picture [282 x 51] intentionally omitted <==**  
+2026-04-07 17:14:35,172 [INFO] test_agents —     |    m, n ngược pha:   2 _k_  1   hay _d_   2 _k_  1  2     m, n vuông pha:    2 _k_  1  hay _d_   2 _k_  1  2 4
+2026-04-07 17:14:35,172 [INFO] test_agents —   ---- Doc 5/5 ----
+2026-04-07 17:14:35,172 [INFO] test_agents —   similarity_score : 0.8209
+2026-04-07 17:14:35,172 [INFO] test_agents —   header_path      : **a. chu kỳ, tần số**
+2026-04-07 17:14:35,172 [INFO] test_agents —   doc_id           : a.thuvienvatly.com.2160e.47524.pdf
+2026-04-07 17:14:35,172 [INFO] test_agents —   role             : chunk
+2026-04-07 17:14:35,172 [INFO] test_agents —   source_type      : pdf
+2026-04-07 17:14:35,173 [INFO] test_agents —   chunk_index      : —
+2026-04-07 17:14:35,173 [INFO] test_agents —   page_content     :
+2026-04-07 17:14:35,173 [INFO] test_agents —     | passage: ## **a. chu kỳ, tần số**  
+2026-04-07 17:14:35,173 [INFO] test_agents —     | tất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.
+2026-04-07 17:14:35,173 [INFO] test_agents —   [EVIDENCE SUMMARY] — 5 item(s)
+2026-04-07 17:14:35,174 [INFO] test_agents —   1. passage: ## **1
+2026-04-07 17:14:35,174 [INFO] test_agents —   2. passage: Summary of a
+2026-04-07 17:14:35,174 [INFO] test_agents —   3. passage: ## **d
+2026-04-07 17:14:35,174 [INFO] test_agents —   4. passage: ## **3
+2026-04-07 17:14:35,174 [INFO] test_agents —   5. passage: ## **a
+2026-04-07 17:14:35,177 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:35,177 [INFO] test_agents — STEP 4: SUMMARY
+2026-04-07 17:14:35,177 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:35,177 [INFO] test_agents —   Q1 | type=qa      | lang=vi    | docs=5 | avg_sim=0.815 | Sóng cơ học là gì? Phân loại sóng ngang và sóng dọ
+2026-04-07 17:14:35,177 [INFO] test_agents —   Q2 | type=qa      | lang=vi    | docs=5 | avg_sim=0.805 | Công thức tính bước sóng và tần số là gì?
+2026-04-07 17:14:35,178 [INFO] test_agents —   Q3 | type=qa      | lang=vi    | docs=5 | avg_sim=0.719 | Những đặc điểm chính của CNXH khoa học là gì?
+2026-04-07 17:14:35,178 [INFO] test_agents —   Q4 | type=quiz    | lang=vi    | docs=5 | avg_sim=0.833 | Tạo 5 câu hỏi trắc nghiệm về sóng cơ học.
+2026-04-07 17:14:35,178 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:35,178 [INFO] test_agents — STEP 5: WRITING FULL OUTPUTS TO JSON
+2026-04-07 17:14:35,179 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:35,180 [INFO] test_agents —   -> Saved 4 query results to D:\KnowGen-Project\backend\app\agents\test_agents_output.json
+2026-04-07 17:14:35,180 [INFO] test_agents — ======================================================================
+2026-04-07 17:14:35,181 [INFO] test_agents — ALL TESTS COMPLETE
+2026-04-07 17:14:35,181 [INFO] test_agents — Log file  : D:\KnowGen-Project\backend\app\agents\test_agents.log
+2026-04-07 17:14:35,181 [INFO] test_agents — JSON file : D:\KnowGen-Project\backend\app\agents\test_agents_output.json
+2026-04-07 17:14:35,181 [INFO] test_agents — ======================================================================

@@ -1,0 +1,426 @@
+[
+  {
+    "query": "Sóng cơ học là gì? Phân loại sóng ngang và sóng dọc.",
+    "supervisor": {
+      "task_type": "qa",
+      "language": "vi",
+      "intent_summary": "Người dùng muốn biết định nghĩa sóng cơ học và cách phân loại sóng ngang, sóng dọc.",
+      "plan": {
+        "steps": [
+          "Bước 1: Sử dụng tác nhân truy xuất để tìm kiếm thông tin về 'sóng cơ học' để định nghĩa nó.",
+          "Bước 2: Sử dụng tác nhân truy xuất để tìm kiếm thông tin về 'sóng ngang' và 'sóng dọc' để mô tả và phân loại chúng.",
+          "Bước 3: Tổng hợp thông tin từ các bước trên để trả lời câu hỏi của người dùng một cách rõ ràng và đầy đủ."
+        ],
+        "context_needed": "sóng cơ học, định nghĩa sóng cơ học, sóng ngang, sóng dọc, phân loại sóng"
+      }
+    },
+    "retriever": {
+      "rewritten_query": "sóng cơ học định nghĩa khái niệm bản chất vật lý dao động truyền sóng phân loại sóng ngang sóng dọc định nghĩa sóng ngang định nghĩa sóng dọc đặc điểm sóng ngang tính chất sóng ngang đặc điểm sóng dọc tính chất sóng dọc so sánh sóng ngang sóng dọc khác biệt sóng ngang sóng dọc các loại sóng cơ học",
+      "evidence_summary": [
+        "passage: ## **1",
+        "passage: ## **a",
+        "passage: ## **d",
+        "passage: ## **b",
+        "passage: ## **1"
+      ],
+      "retrieval_strategy": {
+        "total_retrieved": 5,
+        "top_k": 5,
+        "confidence_threshold": 0.55,
+        "ranking_signals": [
+          "similarity",
+          "source_type",
+          "chunk_position"
+        ],
+        "sources": [
+          "pdf"
+        ]
+      },
+      "retrieved_docs": [
+        {
+          "page_content": "passage: ## **1. sóng cơ và sự truyền sóng cơ**  \n- sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  \n- người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  \n+ sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  \n**==> picture [263 x 197] intentionally omitted <==**  \n+ sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**1. sóng cơ và sự truyền sóng cơ**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8671689033508301
+          }
+        },
+        {
+          "page_content": "passage: ## **a. chu kỳ, tần số**  \ntất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**a. chu kỳ, tần số**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8081253170967102
+          }
+        },
+        {
+          "page_content": "passage: ## **d. tốc độ truyền sóng**  \n- trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  \n**==> picture [58 x 30] intentionally omitted <==**  \n- **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  \n- của các phần tử vật chất.  \n- trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ qua",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**d. tốc độ truyền sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8038464784622192
+          }
+        },
+        {
+          "page_content": "passage: ## **b. biên độ sóng**  \n- biên độ dao động của phần tử môi trường tại một điểm được gọi là biên độ sóng tại điểm đó.  \n- trong thực tế càng xa tâm dao động thì biên độ sóng càng nhỏ.  \ne-mail: mr.taie1987@gmail.com 1 /9 mobile: 0965.147.898  \ntaiª facebook.com/mr.dong1987",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**b. biên độ sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8018427491188049
+          }
+        },
+        {
+          "page_content": "passage: ## **1. sóng âm**  \n- sóng âm là những sóng cơ học lan truyền trong môi trường rắn, lỏng, khí. sóng âm mà con người nghe được có tần số từ 16hz đến 20000hz gọi là âm nghe được ( **âm thanh)** .  \n- những sóng cơ học tần số nhỏ hơn 16hz gọi là sóng hạ âm. sóng này tai con người không nghe được, tuy nhiên một số loài vật như voi, chim bồ câu, … có thể “nghe” được.  \n- những sóng cơ học tần số lớn hơn 20000hz gọi là sóng siêu âm. sóng này tai con người cũng không nghe được, một số loài độn",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**1. sóng âm**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7961978912353516
+          }
+        }
+      ]
+    }
+  },
+  {
+    "query": "Công thức tính bước sóng và tần số là gì?",
+    "supervisor": {
+      "task_type": "qa",
+      "language": "vi",
+      "intent_summary": "Người dùng muốn biết công thức tính bước sóng và tần số.",
+      "plan": {
+        "steps": [
+          "Bước 1: Sử dụng công cụ truy xuất tài liệu để tìm kiếm các công thức liên quan đến bước sóng và tần số.",
+          "Bước 2: Trích xuất các công thức tính bước sóng và tần số từ các tài liệu đã tìm thấy.",
+          "Bước 3: Trình bày các công thức tính bước sóng và tần số cho người dùng."
+        ],
+        "context_needed": "công thức tính bước sóng, công thức tính tần số, wavelength formula, frequency formula"
+      }
+    },
+    "retriever": {
+      "rewritten_query": "Công thức tính bước sóng tần số phương trình biểu thức định nghĩa cách tính xác định độ dài sóng wavelength tần suất frequency vật lý sóng dao động ánh sáng âm thanh điện từ",
+      "evidence_summary": [
+        "passage: ## **3",
+        "passage: ## **a",
+        "passage: ## **d",
+        "passage: ## **2",
+        "passage: ## **c"
+      ],
+      "retrieval_strategy": {
+        "total_retrieved": 5,
+        "top_k": 5,
+        "confidence_threshold": 0.55,
+        "ranking_signals": [
+          "similarity",
+          "source_type",
+          "chunk_position"
+        ],
+        "sources": [
+          "pdf"
+        ]
+      },
+      "retrieved_docs": [
+        {
+          "page_content": "passage: ## **3. phương trình sóng**  \n- phương trình sóng là phương trình xác định **li độ u** của mỗi phần tử của môi trường tại điểm có **tọa độ x** vào một **thời điểm t** bất kỳ.  \n- sóng truyền **từ nguồn** qua m, qua  \no và đến n theo chiều _[v]_[] , giả sử biểu thức sóng tại o có dạng: _uo_  _a_ cos(  _t_  ) , thì:  \n**==> picture [290 x 30] intentionally omitted <==**  \n**==> picture [288 x 30] intentionally omitted <==**  \ne-mail: mr.taie1987@gmail.com 2 /9 mobile: 0965.147.898  \ntaiª ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**3. phương trình sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8191854953765869
+          }
+        },
+        {
+          "page_content": "passage: ## **a. chu kỳ, tần số**  \ntất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**a. chu kỳ, tần số**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8040794134140015
+          }
+        },
+        {
+          "page_content": "passage: ## **d. tốc độ truyền sóng**  \n- trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  \n**==> picture [58 x 30] intentionally omitted <==**  \n- **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  \n- của các phần tử vật chất.  \n- trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ qua",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**d. tốc độ truyền sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8025661110877991
+          }
+        },
+        {
+          "page_content": "passage: ## **2. các đại lượng đặc trưng của chuyển động sóng**",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**2. các đại lượng đặc trưng của chuyển động sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8011372685432434
+          }
+        },
+        {
+          "page_content": "passage: ## **c. bước sóng**  \ncó hai định nghĩa bước sóng:  \n**- bước sóng** là khoảng cách giữa hai điểm gần nhau nhất trên một phương truyền sóng dao động cùng pha.  \n**- bước sóng** là quãng đường mà sóng truyền đi được trong một chu kỳ dao động.  \n**==> picture [197 x 92] intentionally omitted <==**  \nbước sóng **ký hiệu** là lamda (  ). đơn vị là **mét** (m).",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**c. bước sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7990872859954834
+          }
+        }
+      ]
+    }
+  },
+  {
+    "query": "Những đặc điểm chính của CNXH khoa học là gì?",
+    "supervisor": {
+      "task_type": "qa",
+      "language": "vi",
+      "intent_summary": "Người dùng muốn biết những đặc điểm chính của Chủ nghĩa xã hội khoa học.",
+      "plan": {
+        "steps": [
+          "Bước 1: Sử dụng tác nhân truy xuất để tìm các tài liệu liên quan đến 'Chủ nghĩa xã hội khoa học' và 'đặc điểm chính' của nó.",
+          "Bước 2: Tác nhân QA sẽ đọc và tổng hợp các đặc điểm chính từ các đoạn văn bản được truy xuất.",
+          "Bước 3: Tác nhân QA sẽ tạo ra một câu trả lời cô đọng liệt kê các đặc điểm chính của Chủ nghĩa xã hội khoa học."
+        ],
+        "context_needed": "Chủ nghĩa xã hội khoa học, đặc điểm, tính chất, nguyên lý, bản chất"
+      }
+    },
+    "retriever": {
+      "rewritten_query": "Chủ nghĩa Xã hội khoa học đặc điểm chính tính chất nguyên lý bản chất thuộc tính dấu hiệu khía cạnh cơ bản cốt lõi nền tảng nguyên tắc tiêu chí định nghĩa khái niệm lý luận Mác-Lênin",
+      "evidence_summary": [
+        "passage: ## **2",
+        "passage: ## **b",
+        "passage: ## **1",
+        "passage: ## 3",
+        "passage: ## **1"
+      ],
+      "retrieval_strategy": {
+        "total_retrieved": 5,
+        "top_k": 5,
+        "confidence_threshold": 0.55,
+        "ranking_signals": [
+          "similarity",
+          "source_type",
+          "chunk_position"
+        ],
+        "sources": [
+          "pdf"
+        ]
+      },
+      "retrieved_docs": [
+        {
+          "page_content": "passage: ## **2. các đại lượng đặc trưng của chuyển động sóng**",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**2. các đại lượng đặc trưng của chuyển động sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7270629405975342
+          }
+        },
+        {
+          "page_content": "passage: ## **b. âm sắc**  \n- khi một nhạc cụ phát ra một âm có tần số f, thì nó đồng thời phát ra các âm có tần số 2f, 3f, 4f, ..., nf. âm có tần số f gọi là âm cơ bản, các âm có tần số 2f, 3f, 4f, ... gọi là các họa âm bậc 2, bậc 3, bậc 4, ... âm mà chúng ta nghe được từ nhạc cụ chính là sự tổng hợp của âm cơ bản và các họa âm. các nhạc cụ khác nhau cùng tấu lên một đoạn nhạc ở cùng độ cao nhưng chúng ta vẫn phân biệt được tiếng của từng nhạc cụ. khi nghiên cứu đồ thị dao động của chúng chúng ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**b. âm sắc**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7187536954879761
+          }
+        },
+        {
+          "page_content": "passage: ## **1. hai sóng kết hợp**  \n hai nguồn **sóng kết hợp** là hai nguồn:  \n+ dao động cùng phương  \n+ cùng tần số  \n+ độ lệch pha không đổi theo thời gian.  \n **hai sóng kết hợp** là hai sóng do hai nguồn sóng kết hợp phát ra.  \n**2. hiện tượng giao thoa của hai sóng mặt nước. cực đại và cực tiểu**  \nhiện tượng hai sóng kết hợp gặp nhau tạo nên các gợn sóng ổn định gọi là hiện tượng giao thoa của hai sóng. các gợn sóng có hình các đường hypebol gọi là các vân giao thoa.  \n+ giao thoa là h",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**1. hai sóng kết hợp**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7175959348678589
+          }
+        },
+        {
+          "page_content": "passage: ## 3. những đặc trưng của âm  \ncác đặc trưng vật lý của âm (tần số, cường độ âm, mức cường độ âm, đồ thị dao động) gây ra một loạt cảm giác riêng, gọi là các đặc trưng sinh lý của âm (độ cao, độ to, âm sắc). những đặc trưng sinh lý liên quan chặt chẽ với những đặc trưng vật lý của âm.  \ne-mail: mr.taie1987@gmail.com 6 /9 mobile: 0965.147.898  \ntaiª facebook.com/mr.dong1987",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "3. những đặc trưng của âm",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7162832021713257
+          }
+        },
+        {
+          "page_content": "passage: ## **1. sóng cơ và sự truyền sóng cơ**  \n- sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  \n- người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  \n+ sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  \n**==> picture [263 x 197] intentionally omitted <==**  \n+ sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**1. sóng cơ và sự truyền sóng cơ**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.7159988880157471
+          }
+        }
+      ]
+    }
+  },
+  {
+    "query": "Tạo 5 câu hỏi trắc nghiệm về sóng cơ học.",
+    "supervisor": {
+      "task_type": "quiz",
+      "language": "vi",
+      "intent_summary": "Người dùng muốn tạo 5 câu hỏi trắc nghiệm về sóng cơ học.",
+      "plan": {
+        "steps": [
+          "Step 1: Sử dụng tác nhân truy xuất để tìm kiếm và thu thập thông tin liên quan đến 'sóng cơ học' từ cơ sở tri thức cục bộ.",
+          "Step 2: Gửi thông tin đã truy xuất đến tác nhân tạo câu hỏi để tạo ra 5 câu hỏi trắc nghiệm về 'sóng cơ học'.",
+          "Step 3: Trình bày các câu hỏi trắc nghiệm đã tạo cho người dùng."
+        ],
+        "context_needed": "sóng cơ học, cơ học, sóng, đặc điểm sóng cơ học, phương trình sóng, tốc độ truyền sóng"
+      }
+    },
+    "retriever": {
+      "rewritten_query": "sóng cơ học định nghĩa khái niệm đặc điểm tính chất phân loại phương trình sóng công thức biểu thức tốc độ truyền sóng vận tốc lan truyền môi trường đàn hồi vật lý cơ học dao động sóng ngang sóng dọc bước sóng chu kỳ tần số biên độ pha năng lượng cường độ giao thoa nhiễu xạ phản xạ khúc xạ sóng dừng hiện tượng sóng",
+      "evidence_summary": [
+        "passage: ## **1",
+        "passage: Summary of a",
+        "passage: ## **d",
+        "passage: ## **3",
+        "passage: ## **a"
+      ],
+      "retrieval_strategy": {
+        "total_retrieved": 5,
+        "top_k": 5,
+        "confidence_threshold": 0.55,
+        "ranking_signals": [
+          "similarity",
+          "source_type",
+          "chunk_position"
+        ],
+        "sources": [
+          "pdf"
+        ]
+      },
+      "retrieved_docs": [
+        {
+          "page_content": "passage: ## **1. sóng cơ và sự truyền sóng cơ**  \n- sóng cơ học là những dao động cơ học lan truyền theo thời gian trong một môi trường.  \n- người ta dựa vào phương dao động của các phần tử vật chất và phương truyền sóng mà phân sóng cơ thành hai loại:  \n+ sóng ngang: là sóng mà phương dao động của các phần tử vật chất vuông góc với phương truyền sóng.  \n**==> picture [263 x 197] intentionally omitted <==**  \n+ sóng dọc: là sóng mà phương dao động của các phần tử vật chất cùng phương với phương ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**1. sóng cơ và sự truyền sóng cơ**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8377848863601685
+          }
+        },
+        {
+          "page_content": "passage: Summary of a.thuvienvatly.com.2160e.47524.pdf:\nTài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố đị",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "role": "summary",
+            "summary_failed": false,
+            "similarity_score": 0.8532224893569946
+          }
+        },
+        {
+          "page_content": "passage: ## **d. tốc độ truyền sóng**  \n- trong cùng một môi trường tốc độ truyền sóng có giá trị không đổi. trong thời gian một chu kỳ t sóng truyền đi được quãng đường bằng bước sóng , vậy tốc độ truyền sóng là:  \n**==> picture [58 x 30] intentionally omitted <==**  \n- **tốc độ truyền sóng** bằng tốc độ truyền pha dao động khác tốc độ dao động  \n- của các phần tử vật chất.  \n- trong khi sóng truyền đi các đỉnh sóng (pha dao động) được truyền đi còn các phần tử vật chất chỉ dao động tại chỗ qua",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**d. tốc độ truyền sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.827354907989502
+          }
+        },
+        {
+          "page_content": "passage: ## **3. phương trình sóng**  \n- phương trình sóng là phương trình xác định **li độ u** của mỗi phần tử của môi trường tại điểm có **tọa độ x** vào một **thời điểm t** bất kỳ.  \n- sóng truyền **từ nguồn** qua m, qua  \no và đến n theo chiều _[v]_[] , giả sử biểu thức sóng tại o có dạng: _uo_  _a_ cos(  _t_  ) , thì:  \n**==> picture [290 x 30] intentionally omitted <==**  \n**==> picture [288 x 30] intentionally omitted <==**  \ne-mail: mr.taie1987@gmail.com 2 /9 mobile: 0965.147.898  \ntaiª ",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**3. phương trình sóng**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8233680129051208
+          }
+        },
+        {
+          "page_content": "passage: ## **a. chu kỳ, tần số**  \ntất cả các phần tử của môi trường có sóng truyền qua đều dao động với cùng chu kỳ và tần số bằng chu kỳ và tần số của nguồn dao động gọi là chu kỳ và tần số của sóng.",
+          "metadata": {
+            "path": "C:\\Users\\huuda\\Downloads\\a.thuvienvatly.com.2160e.47524.pdf",
+            "cleaned": true,
+            "role": "chunk",
+            "header_path": "**a. chu kỳ, tần số**",
+            "doc_id": "a.thuvienvatly.com.2160e.47524.pdf",
+            "source_type": "pdf",
+            "doc_summary": "Tài liệu này trình bày các khái niệm cơ bản về sóng cơ, bao gồm định nghĩa, phân loại sóng ngang và sóng dọc, sự truyền sóng và các đại lượng đặc trưng như chu kỳ, tần số, biên độ, bước sóng, tốc độ và năng lượng. Nó tiếp tục khám phá hiện tượng giao thoa sóng cơ, giải thích điều kiện sóng kết hợp và sự hình thành các điểm cực đại, cực tiểu. Phần sóng dừng mô tả sự phản xạ sóng và các điều kiện để có sóng dừng trên sợi dây với hai đầu cố định hoặc một đầu tự do. Cuối cùng, tài liệu làm rõ về sóng âm, phân loại theo tần số (hạ âm, âm thanh, siêu âm), môi trường truyền và các đặc trưng sinh lý của âm như độ cao, âm sắc, độ to, cùng với các khái niệm liên quan như cường độ âm, mức cường độ âm, ngưỡng nghe và ngưỡng đau.",
+            "similarity_score": 0.8208664655685425
+          }
+        }
+      ]
+    }
+  }
+]

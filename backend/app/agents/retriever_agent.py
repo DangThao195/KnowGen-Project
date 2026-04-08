@@ -1,518 +1,494 @@
-import logging
 import os
-import json
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
 from difflib import SequenceMatcher
+from typing import Any, Dict, List, Tuple
 
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
+from langchain_huggingface import HuggingFaceEmbeddings
 
-# Import local modules
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-from app.llm.llm_client import LLMClient
 from app.agents.agent_state import AgentState
+from app.agents.base_agent import BaseAgent
+from app.llm.llm_client import LLMClient
 
 load_dotenv()
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-# Configuration
-VECTOR_STORE_DIR = Path(os.getcwd()) / "vector_store" / "faiss_index"
+# --------------- Configuration ---------------
+VECTOR_STORE_DIR = os.path.join(os.getcwd(), "vector_store", "faiss_index")
 EMBEDDING_MODEL = "intfloat/multilingual-e5-base"
-CONFIDENCE_THRESHOLD = 0.30
+CONFIDENCE_THRESHOLD = 0.55   # Per-chunk minimum similarity
+DOC_RELEVANCE_THRESHOLD = 0.70 # Document-level gate: if the summary chunk of a document
+                                # scores below this against the query, ALL chunks from
+                                # that document are discarded — prevents vocabulary-overlap
+                                # false positives for off-topic queries.
 TOP_K = 5
 INITIAL_SEARCH_K = 20
-DEDUP_THRESHOLD = 0.80  
+DEDUP_THRESHOLD = 0.80
+
+TASK_INSTRUCTIONS = {
+    "qa": "Focus on direct information retrieval. Include main topic, key concepts, and specific aspects.",
+    "quiz": "Broaden the search to capture diverse examples, contrasts, edge cases, and nuances.",
+    "unknown": "Standard information retrieval with emphasis on clarity.",
+}
 
 
-class RetrieverAgent:
+class RetrieverAgent(BaseAgent):
     """
-    Retrieves and ranks documents from FAISS vector store.
-    Handles query rewriting, semantic search, ranking, deduplication, and evidence extraction.
+    Retriever Agent — Node 2 of 4 in the KnowGen LangGraph workflow.
+
+    Position in graph: Supervisor → **[RETRIEVER]** → Generator → Critic → END
+
+    Mission:
+        Translate the Supervisor's high-level plan into concrete vector-search
+        operations, retrieve the most relevant document chunks from the FAISS
+        index, and prepare ranked evidence for the Generator to synthesize.
+        This node does NOT generate answers — it only retrieves and ranks.
+
+    Responsibilities:
+        1. Query Rewriting — Use the LLM to expand the original user query with
+           synonyms, related concepts, and abbreviation expansions so the
+           embedding search has maximum recall. The rewritten query is adapted
+           based on task_type:
+             - "qa"  : focused, precise keyword expansion.
+             - "quiz" : broader expansion covering contrasts, edge cases, examples.
+        2. Vector Search — Run the rewritten query (prefixed with "query: " for
+           E5-base compatibility) against the FAISS index, retrieving an initial
+           pool of ``INITIAL_SEARCH_K`` (20) candidates.
+        3. Multi-Signal Ranking — Score each candidate using a composite of:
+             - 70 % cosine similarity (normalized 0-1)
+             - 20 % source type priority (pdf > docx > notion)
+             - 10 % chunk position quality (chunks with header paths preferred)
+           Candidates below ``CONFIDENCE_THRESHOLD`` (0.30) are discarded.
+        4. Deduplication — Remove near-duplicate chunks (> 80 % content overlap
+           via SequenceMatcher), keeping the higher-scoring variant.
+        5. Evidence Extraction — For each of the final ``TOP_K`` (5) chunks,
+           extract a one-sentence factual summary (heuristic by default, or
+           LLM-based when ``use_llm=True``).
+
+    Reads from AgentState:
+        - user_query (str): Original raw query.
+        - task_type (str): "qa" | "quiz" | "unknown" (from Supervisor).
+        - language (str): "en" | "vi" | "mixed" (from Supervisor).
+        - plan (dict): Must contain "context_needed" — key concepts to search for.
+
+    Writes to AgentState:
+        - rewritten_query (str): The LLM-expanded search query.
+        - retrieved_docs (List[Document]): Top-k LangChain Documents with
+          ``similarity_score`` injected into metadata.
+        - evidence_summary (List[str]): One-sentence evidence per retrieved doc.
+        - retrieval_strategy (dict): Metadata about the retrieval run
+          (total_retrieved, top_k, confidence_threshold, ranking_signals, sources).
+
+    Failure behaviour:
+        - If the FAISS index is missing or fails to load, search returns empty.
+        - If query rewriting fails, the original user_query is used as fallback.
+        - If no documents pass the confidence threshold, evidence_summary reports
+          "No relevant documents found." so the Generator can handle gracefully.
     """
-    
-    def __init__(self, vector_store_dir: str = None):
-        """
-        Initialize the Retriever Agent.
-        
-        Args:
-            vector_store_dir: Path to FAISS index directory. Defaults to VECTOR_STORE_DIR.
-        """
+
+    name = "retriever"
+
+    QUERY_REWRITE_PROMPT = """
+    # Role
+    You are a query optimization expert for Vietnamese/English academic documents.
+    Your job is to rewrite the user query so that it retrieves the most relevant chunks from a FAISS vector store using E5 multilingual embeddings.
+
+    # Context
+    - Original Query: {user_query}
+    - Key Concepts Needed: {context_needed}
+    - Task Type: {task_type}
+    - Task Instruction: {task_instruction}
+    - Query Language: {language}
+
+    # Rewriting Rules by Task Type
+    - **QA**: Focus on direct information retrieval. Include main topic, key concepts, and specific aspects mentioned.
+    - **QUIZ**: Broaden the search to capture diverse examples, contrasts, edge cases, and nuances.
+
+    # Examples
+
+    ## Vietnamese
+    - "Chủ nghĩa xã hội là gì?" → "Chủ nghĩa xã hội khoa học định nghĩa khái niệm lý thuyết Marx Engels đặc điểm"
+    - "Những đặc điểm chính của CNXH là gì?" → "Đặc điểm chính CNXH khoa học tính chất nguyên tắc cơ bản"
+
+    ## English
+    - "What is socialism?" → "socialism scientific socialism theory characteristics definition features Marx"
+    - "What are main features?" → "main features characteristics attributes key properties aspects"
+
+    # Instructions
+    1. Expand ALL abbreviations (CNXH → Chủ nghĩa Xã hội, etc.)
+    2. Add related synonyms and concept variations
+    3. Include broader terms and specific aspects
+    4. Make the query LONGER with more keywords than the original
+    5. Preserve the original language
+
+    # Output
+    Return ONLY the expanded query string. No explanations, no labels, no formatting."""
+
+    EVIDENCE_PROMPT = """Extract the main factual claim or key insight from this text in ONE sentence.
+    Preserve the original language (English or Vietnamese).
+    Focus on definitions, facts, or important examples.
+    Output ONLY the sentence, nothing else.
+
+    Text: {content}
+
+    Key Fact:"""
+
+    def __init__(self, vector_store_dir: str | None = None):
+        super().__init__()
+        self.llm_client = LLMClient()
         self.vector_store_dir = vector_store_dir or str(VECTOR_STORE_DIR)
         self.embeddings = self._load_embeddings()
         self.vectorstore = self._load_vectorstore()
-        self.llm_client = LLMClient()
-        logger.info("RetrieverAgent initialized successfully")
-    
+
+    # ------------------------------------------------------------------
+    # Initialisation helpers
+    # ------------------------------------------------------------------
     def _load_embeddings(self) -> HuggingFaceEmbeddings:
-        """Load the E5 embedding model."""
-        logger.info(f"Loading embedding model: {EMBEDDING_MODEL}")
+        self.logger.info(f"Loading embedding model: {EMBEDDING_MODEL}")
         return HuggingFaceEmbeddings(
             model_name=EMBEDDING_MODEL,
-            encode_kwargs={"normalize_embeddings": True}
+            encode_kwargs={"normalize_embeddings": True},
         )
-    
-    def _load_vectorstore(self) -> Optional[FAISS]:
-        """Load FAISS index from disk."""
+
+    def _load_vectorstore(self) -> FAISS | None:
         try:
             if not os.path.exists(self.vector_store_dir):
-                logger.warning(f"Vector store directory not found: {self.vector_store_dir}")
+                self.logger.warning(f"Vector store not found: {self.vector_store_dir}")
                 return None
-            
-            logger.info(f"Loading FAISS index from: {self.vector_store_dir}")
-            vectorstore = FAISS.load_local(self.vector_store_dir, self.embeddings, allow_dangerous_deserialization=True)
-            logger.info("FAISS index loaded successfully")
-            return vectorstore
+            self.logger.info(f"Loading FAISS index from: {self.vector_store_dir}")
+            vs = FAISS.load_local(
+                self.vector_store_dir,
+                self.embeddings,
+                allow_dangerous_deserialization=True,
+            )
+            self.logger.info("FAISS index loaded successfully")
+            return vs
         except Exception as e:
-            logger.error(f"Failed to load FAISS index: {e}")
+            self.logger.error(f"Failed to load FAISS index: {e}")
             return None
-    
-    def rewrite_query(self, 
-                     user_query: str, 
-                     context_needed: str, 
-                     task_type: str,
-                     language: str) -> str:
-        """
-        Rewrite the user query using LLM to optimize for vector search.
-        Includes semantic keywords, synonyms, and context-specific terms.
-        
-        Args:
-            user_query: Original user query
-            context_needed: Key concepts from supervisor's plan
-            task_type: "qa" or "quiz"
-            language: "en", "vi", or "mixed"
-        
-        Returns:
-            Optimized search query string
-        """
-        task_instruction = {
-            "qa": "Focus on direct information retrieval. Include main topic, key concepts, and specific aspects.",
-            "quiz": "Broaden the search to capture diverse examples, contrasts, edge cases, and nuances.",
-            "unknown": "Standard information retrieval with emphasis on clarity."
-        }.get(task_type, "Standard retrieval")
-        
-        # Use more specific examples based on language
-        if language == "vi":
-            examples = """
-EXAMPLES:
-- "Chủ nghĩa xã hội là gì?" → "Chủ nghĩa xã hội khoa học định nghĩa khái niệm lý thuyết Marx Engels đặc điểm"
-- "Những đặc điểm chính của CNXH là gì?" → "Đặc điểm chính CNXH khoa học tính chất nguyên tắc cơ bản"
-"""
-        else:
-            examples = """
-EXAMPLES:
-- "What is socialism?" → "socialism scientific socialism theory characteristics definition features Marx"
-- "What are main features?" → "main features characteristics attributes key properties aspects"
-"""
-        
-        prompt = f"""You are a query optimization expert for Vietnamese/English academic documents. MUST rewrite the query to be LONGER and RICHER.
 
-Original Query: {user_query}
-Context Needed: {context_needed}
-Task Type: {task_type} - {task_instruction}
-Query Language: {language}
 
-{examples}
+    # 1. Query rewriting
+    def rewrite_query(
+        self,
+        user_query: str,
+        context_needed: str,
+        task_type: str,
+        language: str,
+    ) -> str:
+        task_instruction = TASK_INSTRUCTIONS.get(task_type, TASK_INSTRUCTIONS["unknown"])
+        prompt = self.QUERY_REWRITE_PROMPT.format(
+            user_query=user_query,
+            context_needed=context_needed,
+            task_type=task_type,
+            task_instruction=task_instruction,
+            language=language,
+        )
 
-Your Task - MUST do the following:
-1. Expand ANY abbreviations (CNXH → Chủ nghĩa Xã hội, etc.)
-2. Add related synonyms and concept variations
-3. Include broader terms and specific aspects
-4. Make the query LONGER with more keywords
-5. Preserve the original language
-6. Output ONLY the expanded query, nothing else - NO explanations!
-
-IMPORTANT: The rewritten query MUST be longer and contain MORE keywords than the original.
-
-Optimized Query:"""
-        
         try:
             rewritten = self.llm_client.generate_response(prompt)
-            rewritten_query = rewritten.strip()
-            
-            # Check if rewrite actually expanded the query
-            if len(rewritten_query) <= len(user_query):
-                logger.warning(f"Query not expanded enough. Using expansion strategy.")
-                # Fallback: manually add context terms if LLM didn't expand enough
-                if context_needed and rewritten_query.lower() == user_query.lower():
-                    rewritten_query = f"{user_query} {context_needed}"
-            
-            logger.info(f"Query rewritten: '{user_query[:40]}...' ({len(user_query)} chars) → '{rewritten_query[:40]}...' ({len(rewritten_query)} chars)")
+            rewritten_text = rewritten.content if hasattr(rewritten, "content") else str(rewritten)
+            rewritten_query = rewritten_text.strip()
+
+            # Fallback if LLM didn't actually expand
+            if len(rewritten_query) <= len(user_query) and context_needed:
+                rewritten_query = f"{user_query} {context_needed}"
+
+            self.logger.info(
+                f"Query rewritten: '{user_query[:40]}…' ({len(user_query)} chars) "
+                f"→ '{rewritten_query[:40]}…' ({len(rewritten_query)} chars)"
+            )
             return rewritten_query
         except Exception as e:
-            logger.warning(f"Query rewriting failed, using original: {e}")
+            self.logger.warning(f"Query rewriting failed, using original: {e}")
             return user_query
-    
-    def search_and_rank(self, 
-                       query: str, 
-                       initial_k: int = INITIAL_SEARCH_K,
-                       top_k: int = TOP_K) -> List[Tuple[Document, float]]:
-        """
-        Execute vector search and rank candidates by multiple signals.
-        
-        Args:
-            query: Search query (will be prefixed with "query: " for E5-base)
-            initial_k: Number of initial candidates to retrieve
-            top_k: Final number of results to return
-        
-        Returns:
-            List of (Document, similarity_score) tuples ranked by composite score
-        """
+
+    # 2. Search & rank
+    def search_and_rank(
+        self,
+        query: str,
+        initial_k: int = INITIAL_SEARCH_K,
+        top_k: int = TOP_K,
+    ) -> List[Tuple[Document, float]]:
         if not self.vectorstore:
-            logger.error("Vector store not initialized")
+            self.logger.error("Vector store not initialised")
             return []
-        
-        # Add E5-base query prefix
+
         query_with_prefix = f"query: {query}"
-        
         try:
-            # Search for candidates
-            logger.info(f"Searching for {initial_k} candidates with query: {query}")
-            # FAISS similarity_search_with_relevance_scores returns (Document, score) tuples
+            self.logger.info(f"Searching {initial_k} candidates…")
             results = self.vectorstore.similarity_search_with_relevance_scores(
-                query_with_prefix, 
-                k=initial_k
+                query_with_prefix, k=initial_k
             )
-            logger.info(f"Found {len(results)} candidates")
-            
-            # Rank using multi-signal approach
-            ranked = self._multi_signal_rank(results, top_k)
-            logger.info(f"After ranking and filtering: {len(ranked)} documents retained")
-            
+            self.logger.info(f"Found {len(results)} candidates")
+
+            # Document-level relevance gate — prune documents whose summary
+            # chunk scores below DOC_RELEVANCE_THRESHOLD before chunk ranking.
+            gated = self._gate_by_doc_summary(results)
+            if not gated:
+                self.logger.warning(
+                    "All documents failed the doc-relevance gate "
+                    f"(threshold={DOC_RELEVANCE_THRESHOLD}). Query is off-topic."
+                )
+                return []
+
+            ranked = self._multi_signal_rank(gated, top_k)
+            self.logger.info(f"After ranking & filtering: {len(ranked)} documents")
             return ranked
         except Exception as e:
-            logger.error(f"Search failed: {e}")
+            self.logger.error(f"Search failed: {e}")
             return []
-    
-    def _multi_signal_rank(self, 
-                          results: List[Tuple[Document, float]], 
-                          top_k: int) -> List[Tuple[Document, float]]:
+
+    def _gate_by_doc_summary(
+        self,
+        results: List[Tuple[Document, float]],
+    ) -> List[Tuple[Document, float]]:
         """
-        Apply multi-signal ranking to candidates.
-        Signals: similarity (primary) → source_type (secondary) → chunk_position (tertiary).
-        Also applies confidence threshold and deduplication.
-        
-        Args:
-            results: List of (Document, similarity_score) from FAISS
-            top_k: Number of final results
-        
-        Returns:
-            Filtered and ranked list of (Document, similarity_score)
+        Document-level relevance gate.
+
+        For each unique doc_id in the candidate pool, find its summary chunk's
+        similarity score.  If the best summary score for a document is below
+        DOC_RELEVANCE_THRESHOLD, ALL chunks from that document are removed.
+
+        Rationale: the summary chunk encodes the full document topic.  When a
+        query is off-topic, the summary similarity will be low even though
+        individual chunks may share generic academic vocabulary with the query
+        and pass the per-chunk CONFIDENCE_THRESHOLD.
+
+        Fallback: if a document has no summary chunk in the candidate pool,
+        the highest chunk similarity for that document is used as a proxy.
         """
-        scored_docs = []
-        
+        # Step 1 — collect the best summary score per doc_id
+        doc_best_summary: Dict[str, float] = {}
+        for doc, score in results:
+            meta = doc.metadata or {}
+            doc_id = meta.get("doc_id", "__unknown__")
+            role   = meta.get("role", "chunk")
+            if role == "summary":
+                doc_best_summary[doc_id] = max(
+                    doc_best_summary.get(doc_id, 0.0), score
+                )
+
+        # Step 2 — for docs with no summary chunk in the pool, use max chunk score
+        doc_best_chunk: Dict[str, float] = {}
+        for doc, score in results:
+            meta  = doc.metadata or {}
+            doc_id = meta.get("doc_id", "__unknown__")
+            doc_best_chunk[doc_id] = max(doc_best_chunk.get(doc_id, 0.0), score)
+
+        # Step 3 — decide which doc_ids pass the gate
+        passed_docs: set = set()
+        for doc_id in doc_best_chunk:
+            relevance = doc_best_summary.get(doc_id, doc_best_chunk[doc_id])
+            if relevance >= DOC_RELEVANCE_THRESHOLD:
+                passed_docs.add(doc_id)
+            else:
+                self.logger.info(
+                    f"Doc '{doc_id}' pruned by relevance gate "
+                    f"(summary_sim={relevance:.4f} < {DOC_RELEVANCE_THRESHOLD})"
+                )
+
+        # Step 4 — keep only chunks from passing documents
+        gated = [
+            (doc, score)
+            for doc, score in results
+            if (doc.metadata or {}).get("doc_id", "__unknown__") in passed_docs
+        ]
+        self.logger.info(
+            f"Doc-relevance gate: {len(passed_docs)}/{len(doc_best_chunk)} doc(s) passed, "
+            f"{len(gated)}/{len(results)} chunks retained."
+        )
+        return gated
+
+    def _multi_signal_rank(
+        self,
+        results: List[Tuple[Document, float]],
+        top_k: int,
+    ) -> List[Tuple[Document, float]]:
+        source_priorities = {"pdf": 1.0, "docx": 0.95, "notion": 0.8, "unknown": 0.5}
+        scored_docs: List[Dict[str, Any]] = []
+
         for doc, similarity_score in results:
-            # Normalize similarity to 0-1 range (FAISS returns distances, closer = lower score sometimes)
-            # Assuming FAISS already returns normalized similarity in [0, 1]
-            norm_similarity = max(0.0, min(1.0, similarity_score))
-            
-            # Apply confidence threshold
-            if norm_similarity < CONFIDENCE_THRESHOLD:
+            norm_sim = max(0.0, min(1.0, similarity_score))
+            if norm_sim < CONFIDENCE_THRESHOLD:
                 continue
-            
-            # Extract metadata signals
+
             metadata = doc.metadata or {}
-            source_type = metadata.get("source_type", "unknown")
-            chunk_index = metadata.get("chunk_index", 999)
-            header_path = metadata.get("header_path", "")
-            
-            # Secondary score: source type priority
-            # Prioritize pdf/docx over notion for academic content
-            source_priorities = {"pdf": 1.0, "docx": 0.95, "notion": 0.8, "unknown": 0.5}
-            source_score = source_priorities.get(source_type, 0.5)
-            
-            # Tertiary score: chunk position (prefer chunks from clear sections)
-            # Chunks with header_path get slight boost
-            position_score = 1.0 if header_path else 0.85
-            
-            # Composite score
-            composite_score = (
-                0.7 * norm_similarity +      # 70% weight on similarity
-                0.2 * source_score +          # 20% weight on source type
-                0.1 * position_score          # 10% weight on position/headers
-            )
-            
+            source_score = source_priorities.get(metadata.get("source_type", "unknown"), 0.5)
+            position_score = 1.0 if metadata.get("header_path") else 0.85
+
+            composite = 0.7 * norm_sim + 0.2 * source_score + 0.1 * position_score
             scored_docs.append({
                 "doc": doc,
-                "similarity_score": norm_similarity,
-                "composite_score": composite_score,
-                "source_type": source_type
+                "similarity_score": norm_sim,
+                "composite_score": composite,
             })
-        
-        # Sort by composite score (descending)
+
         scored_docs.sort(key=lambda x: x["composite_score"], reverse=True)
-        
-        # Deduplication: remove near-duplicates
-        deduplicated = self._deduplicate_chunks(scored_docs)
-        
-        # Return top-k as (Document, similarity_score)
-        final_results = []
-        for item in deduplicated[:top_k]:
-            final_results.append((item["doc"], item["similarity_score"]))
-        
-        return final_results
-    
-    def _deduplicate_chunks(self, scored_docs: List[Dict]) -> List[Dict]:
-        """
-        Remove near-duplicate chunks based on content overlap.
-        If two chunks overlap > DEDUP_THRESHOLD (80%), keep only the higher-scoring one.
-        Also ensure diversity: prefer chunks from different sections.
-        
-        Args:
-            scored_docs: List of scored document dictionaries
-        
-        Returns:
-            Deduplicated list of scored documents
-        """
-        deduplicated = []
-        
+        deduped = self._deduplicate(scored_docs)
+        return [(d["doc"], d["similarity_score"]) for d in deduped[:top_k]]
+
+    # 3. Deduplication
+    def _deduplicate(self, scored_docs: List[Dict]) -> List[Dict]:
+        kept: List[Dict] = []
         for candidate in scored_docs:
-            is_duplicate = False
-            
-            for kept in deduplicated:
-                # Check content overlap
-                overlap_ratio = self._calculate_overlap(
-                    candidate["doc"].page_content,
-                    kept["doc"].page_content
-                )
-                
-                if overlap_ratio > DEDUP_THRESHOLD:
-                    # Found a near-duplicate; keep the higher-scoring one
-                    if candidate["composite_score"] > kept["composite_score"]:
-                        deduplicated.remove(kept)
-                        deduplicated.append(candidate)
-                    is_duplicate = True
+            is_dup = False
+            for i, existing in enumerate(kept):
+                overlap = SequenceMatcher(
+                    None, candidate["doc"].page_content, existing["doc"].page_content
+                ).ratio()
+                if overlap > DEDUP_THRESHOLD:
+                    if candidate["composite_score"] > existing["composite_score"]:
+                        kept[i] = candidate
+                    is_dup = True
                     break
-            
-            if not is_duplicate:
-                deduplicated.append(candidate)
-        
-        return deduplicated
-    
-    def _calculate_overlap(self, text1: str, text2: str) -> float:
-        """
-        Calculate content overlap between two texts using SequenceMatcher.
-        Returns a ratio in range [0, 1].
-        """
-        matcher = SequenceMatcher(None, text1, text2)
-        return matcher.ratio()
-    
-    def extract_evidence(self, 
-                        ranked_docs: List[Tuple[Document, float]],
-                        llm_extraction: bool = False) -> List[str]:
-        """
-        Extract one-sentence evidence summaries from top ranked documents.
-        
-        Args:
-            ranked_docs: List of (Document, similarity_score) tuples
-            llm_extraction: If True, use LLM to extract; else use heuristics
-        
-        Returns:
-            List of evidence strings (one per document)
-        """
-        evidence_list = []
-        
-        for doc, score in ranked_docs:
+            if not is_dup:
+                kept.append(candidate)
+        return kept
+
+    # 4. Evidence extraction
+    def extract_evidence(
+        self,
+        ranked_docs: List[Tuple[Document, float]],
+        use_llm: bool = False,
+    ) -> List[str]:
+        evidence: List[str] = []
+        for doc, _ in ranked_docs:
             try:
-                if llm_extraction:
-                    # Use LLM to summarize each chunk to one sentence
-                    evidence = self._extract_with_llm(doc.page_content)
+                if use_llm:
+                    fact = self._extract_with_llm(doc.page_content)
                 else:
-                    # Use heuristic: first meaningful sentence
-                    evidence = self._extract_heuristic(doc.page_content)
-                
-                if evidence:
-                    evidence_list.append(evidence)
+                    fact = self._extract_heuristic(doc.page_content)
+                if fact:
+                    evidence.append(fact)
             except Exception as e:
-                logger.warning(f"Evidence extraction failed for doc: {e}")
-                continue
-        
-        return evidence_list
-    
+                self.logger.warning(f"Evidence extraction failed: {e}")
+        return evidence
+
     def _extract_with_llm(self, content: str, max_length: int = 200) -> str:
-        """Extract evidence using LLM - one sentence summary."""
-        prompt = f"""Extract the main factual claim or key insight from this text in ONE sentence. 
-        Preserve the original language (English or Vietnamese).
-        Focus on definitions, facts, or important examples.
-        Output ONLY the sentence, nothing else.
-
-Text: {content[:500]}
-
-Key Fact:"""
-        
+        prompt = self.EVIDENCE_PROMPT.format(content=content[:500])
         try:
-            response = self.llm_client.generate_response(prompt)
-            return response.strip()[:max_length]
+            resp = self.llm_client.generate_response(prompt)
+            text = resp.content if hasattr(resp, "content") else str(resp)
+            return text.strip()[:max_length]
         except Exception as e:
-            logger.warning(f"LLM extraction failed: {e}")
+            self.logger.warning(f"LLM evidence extraction failed: {e}")
             return ""
-    
-    def _extract_heuristic(self, content: str, max_length: int = 200) -> str:
-        """Extract evidence using heuristics - first meaningful sentence."""
-        # Split by sentence delimiters
-        sentences = [s.strip() for s in content.replace("。", ".").split(".") if s.strip()]
-        
-        if sentences:
-            # Return first sentence, truncated to max_length
-            return sentences[0][:max_length]
-        
-        return content[:max_length]
-    
+
+    @staticmethod
+    def _extract_heuristic(content: str, max_length: int = 200) -> str:
+        sentences = [s.strip() for s in content.replace("\u3002", ".").split(".") if s.strip()]
+        return sentences[0][:max_length] if sentences else content[:max_length]
+
     def run(self, state: AgentState) -> Dict[str, Any]:
         """
-        Main retriever execution function.
-        Called by LangGraph to update AgentState with retrieved documents and evidence.
-        
-        Args:
-            state: Current AgentState from LangGraph
-        
-        Returns:
-            Dictionary with keys to update AgentState:
-            - rewritten_query
-            - retrieved_docs
-            - retrieval_strategy
-            - evidence_summary
+        Execute the full retrieval pipeline on the current AgentState.
+
+        Steps:
+            1. Extract ``user_query``, ``task_type``, ``language``, and
+               ``plan.context_needed`` from state.
+            2. Rewrite the query via LLM for better embedding recall.
+            3. Run FAISS similarity search → multi-signal rank → deduplicate.
+            4. Extract one-sentence evidence from each top-k chunk.
+            5. Return a dict that LangGraph merges into AgentState:
+               ``rewritten_query``, ``retrieved_docs``, ``evidence_summary``,
+               ``retrieval_strategy``.
+
+        Returns an empty result set (with diagnostic message) when no documents
+        meet the confidence threshold, allowing the Generator to handle the
+        "no context found" case.
         """
-        logger.info("=== RETRIEVER AGENT RUNNING ===")
-        
-        # Extract inputs from state
         user_query = state.get("user_query", "")
         task_type = state.get("task_type", "qa")
         language = state.get("language", "en")
         plan = state.get("plan", {})
         context_needed = plan.get("context_needed", "")
-        
+
         if not user_query:
-            logger.error("No user query provided")
-            return {
-                "rewritten_query": "",
-                "retrieved_docs": [],
-                "evidence_summary": [],
-                "retrieval_strategy": {}
-            }
-        
-        # Step 1: Rewrite query
+            self.logger.error("No user query provided")
+            return self._empty_result()
+
+        # 1 — Rewrite query
         rewritten_query = self.rewrite_query(user_query, context_needed, task_type, language)
-        
-        # Step 2: Search and rank
-        ranked_docs = self.search_and_rank(rewritten_query, initial_k=INITIAL_SEARCH_K, top_k=TOP_K)
-        
+
+        # 2 — Search & rank
+        ranked_docs = self.search_and_rank(rewritten_query)
         if not ranked_docs:
-            logger.warning("No documents retrieved with sufficient confidence")
+            self.logger.warning("No documents above confidence threshold")
             return {
                 "rewritten_query": rewritten_query,
                 "retrieved_docs": [],
                 "evidence_summary": ["No relevant documents found."],
-                "retrieval_strategy": {
-                    "total_retrieved": 0,
-                    "top_k": TOP_K,
-                    "confidence_threshold": CONFIDENCE_THRESHOLD,
-                    "sources": []
-                }
+                "retrieval_strategy": self._build_strategy(0, []),
             }
-        
-        # Step 3: Extract evidence
-        evidence_summary = self.extract_evidence(ranked_docs, llm_extraction=False)
-        
-        # Step 4: Format retrieved_docs for output
-        retrieved_docs_formatted = []
-        sources_set = set()
-        
-        for doc, similarity_score in ranked_docs:
-            metadata = doc.metadata or {}
-            sources_set.add(metadata.get("source_type", "unknown"))
-            
-            retrieved_docs_formatted.append(
+
+        # 3 — Extract evidence
+        evidence_summary = self.extract_evidence(ranked_docs, use_llm=False)
+
+        # 4 — Format output
+        formatted_docs: List[Document] = []
+        sources: set[str] = set()
+        for doc, sim_score in ranked_docs:
+            meta = doc.metadata or {}
+            sources.add(meta.get("source_type", "unknown"))
+            formatted_docs.append(
                 Document(
                     page_content=doc.page_content,
-                    metadata={
-                        **metadata,
-                        "similarity_score": float(similarity_score)
-                    }
+                    metadata={**meta, "similarity_score": float(sim_score)},
                 )
             )
-        
-        # Step 5: Build retrieval strategy metadata
-        retrieval_strategy = {
-            "total_retrieved": len(ranked_docs),
+
+        self.logger.info(
+            f"Retrieval complete: {len(formatted_docs)} docs, {len(evidence_summary)} evidence items"
+        )
+        return {
+            "rewritten_query": rewritten_query,
+            "retrieved_docs": formatted_docs,
+            "evidence_summary": evidence_summary,
+            "retrieval_strategy": self._build_strategy(len(formatted_docs), list(sources)),
+        }
+
+    # Helpers
+    @staticmethod
+    def _build_strategy(total: int, sources: List[str]) -> Dict[str, Any]:
+        return {
+            "total_retrieved": total,
             "top_k": TOP_K,
             "confidence_threshold": CONFIDENCE_THRESHOLD,
             "ranking_signals": ["similarity", "source_type", "chunk_position"],
-            "sources": list(sources_set)
-        }
-        
-        logger.info(f"Retrieval complete: {len(ranked_docs)} documents, {len(evidence_summary)} evidence items")
-        
-        # Return state updates
-        return {
-            "rewritten_query": rewritten_query,
-            "retrieved_docs": retrieved_docs_formatted,
-            "evidence_summary": evidence_summary,
-            "retrieval_strategy": retrieval_strategy
+            "sources": sources,
         }
 
-
-# Standalone function for LangGraph integration
-def retriever_agent(state: AgentState) -> Dict[str, Any]:
-    """
-    LangGraph node function that wraps the RetrieverAgent.
-    Called by the LangGraph workflow.
-    """
-    try:
-        agent = RetrieverAgent()
-        result = agent.run(state)
-        return result
-    except Exception as e:
-        logger.error(f"Retriever agent failed: {e}", exc_info=True)
+    @staticmethod
+    def _empty_result() -> Dict[str, Any]:
         return {
-            "rewritten_query": state.get("user_query", ""),
+            "rewritten_query": "",
             "retrieved_docs": [],
-            "evidence_summary": [f"Retrieval failed: {str(e)}"],
-            "retrieval_strategy": {}
+            "evidence_summary": [],
+            "retrieval_strategy": {},
         }
 
+_agent = RetrieverAgent()
 
-if __name__ == "__main__":
-    # Demo: Test the retriever agent
-    logger.info("Starting Retriever Agent Demo...")
-    
-    # Create sample state
-    sample_state = AgentState(
-        user_query="What is Marxism?",
-        task_type="qa",
-        language="en",
-        intent_summary="User asking for definition of Marxism",
-        plan={
-            "steps": ["Retrieve Marxism docs", "Extract definitions", "Compile answer"],
-            "context_needed": "Marxism, communist theory, Karl Marx"
-        }
-    )
-    
-    # Run retriever
-    agent = RetrieverAgent()
-    result = agent.run(sample_state)
-    
-    # Display results
-    print("\n" + "="*80)
-    print("RETRIEVER AGENT RESULTS")
-    print("="*80)
-    print(f"\nRewritten Query: {result.get('rewritten_query')}")
-    print(f"\nDocuments Retrieved: {len(result.get('retrieved_docs', []))}")
-    
-    if result.get('retrieved_docs'):
-        print("\nTop Documents:")
-        for i, doc in enumerate(result['retrieved_docs'][:3], 1):
-            print(f"\n[{i}] Score: {doc.metadata.get('similarity_score', 'N/A'):.2f}")
-            print(f"    Header: {doc.metadata.get('header_path', 'N/A')}")
-            print(f"    Preview: {doc.page_content[:100]}...")
-    
-    print(f"\nEvidence Summary:")
-    for i, evidence in enumerate(result.get('evidence_summary', []), 1):
-        print(f"  {i}. {evidence}")
-    
-    print(f"\nRetrieval Strategy: {json.dumps(result.get('retrieval_strategy', {}), indent=2)}")
+
+def retriever_node(state: AgentState) -> Dict[str, Any]:
+    """
+    LangGraph node wrapper for the Retriever Agent.
+
+    This is the function registered with ``workflow.add_node("retriever", retriever_node)``.
+    It delegates to a module-level ``RetrieverAgent`` singleton so the FAISS index
+    and embedding model are loaded once and reused across invocations.
+
+    Input (from AgentState):
+        - user_query (str)
+        - task_type (str): from Supervisor
+        - language (str): from Supervisor
+        - plan (dict): from Supervisor — must contain "context_needed"
+
+    Output (merged into AgentState):
+        - rewritten_query (str)
+        - retrieved_docs (List[Document])
+        - evidence_summary (List[str])
+        - retrieval_strategy (dict)
+    """
+    return _agent(state)
