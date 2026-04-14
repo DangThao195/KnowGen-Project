@@ -1,4 +1,5 @@
 import os
+import re
 from difflib import SequenceMatcher
 from typing import Any, Dict, List, Tuple
 
@@ -16,7 +17,7 @@ load_dotenv()
 # --------------- Configuration ---------------
 VECTOR_STORE_DIR = os.path.join(os.getcwd(), "vector_store", "faiss_index")
 EMBEDDING_MODEL = "intfloat/multilingual-e5-base"
-CONFIDENCE_THRESHOLD = 0.55   # Per-chunk minimum similarity
+CONFIDENCE_THRESHOLD = 0.7  # Per-chunk minimum similarity
 DOC_RELEVANCE_THRESHOLD = 0.70 # Document-level gate: if the summary chunk of a document
                                 # scores below this against the query, ALL chunks from
                                 # that document are discarded — prevents vocabulary-overlap
@@ -24,6 +25,7 @@ DOC_RELEVANCE_THRESHOLD = 0.70 # Document-level gate: if the summary chunk of a 
 TOP_K = 5
 INITIAL_SEARCH_K = 20
 DEDUP_THRESHOLD = 0.80
+TOPIC_OVERLAP_THRESHOLD = 0.15
 
 TASK_INSTRUCTIONS = {
     "qa": "Focus on direct information retrieval. Include main topic, key concepts, and specific aspects.",
@@ -207,6 +209,7 @@ class RetrieverAgent(BaseAgent):
     def search_and_rank(
         self,
         query: str,
+        context_needed: str = "",
         initial_k: int = INITIAL_SEARCH_K,
         top_k: int = TOP_K,
     ) -> List[Tuple[Document, float]]:
@@ -233,8 +236,19 @@ class RetrieverAgent(BaseAgent):
                 return []
 
             ranked = self._multi_signal_rank(gated, top_k)
-            self.logger.info(f"After ranking & filtering: {len(ranked)} documents")
-            return ranked
+            if not ranked:
+                return []
+
+            filtered = self._filter_off_topic(query, context_needed, ranked)
+            if not filtered:
+                self.logger.warning(
+                    "No documents passed the topic consistency filter. "
+                    "Query appears unrelated to indexed content."
+                )
+                return []
+
+            self.logger.info(f"After ranking & filtering: {len(filtered)} documents")
+            return filtered
         except Exception as e:
             self.logger.error(f"Search failed: {e}")
             return []
@@ -328,6 +342,45 @@ class RetrieverAgent(BaseAgent):
         deduped = self._deduplicate(scored_docs)
         return [(d["doc"], d["similarity_score"]) for d in deduped[:top_k]]
 
+    def _filter_off_topic(
+        self,
+        query: str,
+        context_needed: str,
+        ranked_docs: List[Tuple[Document, float]],
+    ) -> List[Tuple[Document, float]]:
+        if not ranked_docs:
+            return []
+
+        topic_text = " ".join([part for part in [query.strip(), context_needed.strip()] if part])
+        if not topic_text:
+            return ranked_docs
+
+        for doc, _ in ranked_docs:
+            if self._topic_match_score(topic_text, doc.page_content) >= TOPIC_OVERLAP_THRESHOLD:
+                return ranked_docs
+
+            metadata = doc.metadata or {}
+            header_path = metadata.get("header_path", "")
+            title = metadata.get("title", "")
+            if self._topic_match_score(topic_text, header_path) >= TOPIC_OVERLAP_THRESHOLD:
+                return ranked_docs
+            if self._topic_match_score(topic_text, title) >= TOPIC_OVERLAP_THRESHOLD:
+                return ranked_docs
+
+        return []
+
+    def _topic_match_score(self, query: str, content: str) -> float:
+        query_terms = self._normalize_terms(query)
+        content_terms = self._normalize_terms(content)
+        if not query_terms or not content_terms:
+            return 0.0
+        overlap = query_terms.intersection(content_terms)
+        return len(overlap) / max(len(query_terms), 1)
+
+    @staticmethod
+    def _normalize_terms(text: str) -> set[str]:
+        return set(re.findall(r"\w{2,}", text.lower(), flags=re.UNICODE))
+
     # 3. Deduplication
     def _deduplicate(self, scored_docs: List[Dict]) -> List[Dict]:
         kept: List[Dict] = []
@@ -412,9 +465,11 @@ class RetrieverAgent(BaseAgent):
         rewritten_query = self.rewrite_query(user_query, context_needed, task_type, language)
 
         # 2 — Search & rank
-        ranked_docs = self.search_and_rank(rewritten_query)
+        ranked_docs = self.search_and_rank(rewritten_query, context_needed)
         if not ranked_docs:
-            self.logger.warning("No documents above confidence threshold")
+            self.logger.warning(
+                "No documents above confidence threshold or topic consistency filter"
+            )
             return {
                 "rewritten_query": rewritten_query,
                 "retrieved_docs": [],
