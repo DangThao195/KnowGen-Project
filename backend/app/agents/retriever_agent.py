@@ -25,7 +25,7 @@ DOC_RELEVANCE_THRESHOLD = 0.70 # Document-level gate: if the summary chunk of a 
 TOP_K = 5
 INITIAL_SEARCH_K = 20
 DEDUP_THRESHOLD = 0.80
-TOPIC_OVERLAP_THRESHOLD = 0.15
+TOPIC_OVERLAP_THRESHOLD = 0.25
 
 TASK_INSTRUCTIONS = {
     "qa": "Focus on direct information retrieval. Include main topic, key concepts, and specific aspects.",
@@ -355,19 +355,29 @@ class RetrieverAgent(BaseAgent):
         if not topic_text:
             return ranked_docs
 
-        for doc, _ in ranked_docs:
-            if self._topic_match_score(topic_text, doc.page_content) >= TOPIC_OVERLAP_THRESHOLD:
-                return ranked_docs
-
+        filtered: List[Tuple[Document, float]] = []
+        for doc, score in ranked_docs:
             metadata = doc.metadata or {}
-            header_path = metadata.get("header_path", "")
             title = metadata.get("title", "")
-            if self._topic_match_score(topic_text, header_path) >= TOPIC_OVERLAP_THRESHOLD:
-                return ranked_docs
-            if self._topic_match_score(topic_text, title) >= TOPIC_OVERLAP_THRESHOLD:
-                return ranked_docs
+            header_path = metadata.get("header_path", "")
 
-        return []
+            if self._topic_match_score(topic_text, doc.page_content) >= TOPIC_OVERLAP_THRESHOLD:
+                filtered.append((doc, score))
+                continue
+
+            if header_path and self._topic_match_score(topic_text, header_path) >= TOPIC_OVERLAP_THRESHOLD:
+                filtered.append((doc, score))
+                continue
+
+            if title and self._topic_match_score(topic_text, title) >= TOPIC_OVERLAP_THRESHOLD:
+                filtered.append((doc, score))
+                continue
+
+        if not filtered:
+            self.logger.info(
+                "No ranked docs passed the off-topic filter for query/topic '%s'", topic_text
+            )
+        return filtered
 
     def _topic_match_score(self, query: str, content: str) -> float:
         query_terms = self._normalize_terms(query)
