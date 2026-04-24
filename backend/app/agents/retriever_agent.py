@@ -238,7 +238,7 @@ class RetrieverAgent(BaseAgent):
             ranked = self._multi_signal_rank(gated, top_k)
             if not ranked:
                 return []
-
+            
             filtered = self._filter_off_topic(query, context_needed, ranked)
             if not filtered:
                 self.logger.warning(
@@ -323,7 +323,7 @@ class RetrieverAgent(BaseAgent):
         scored_docs: List[Dict[str, Any]] = []
 
         for doc, similarity_score in results:
-            norm_sim = max(0.0, min(1.0, similarity_score))
+            norm_sim = max(0.0, min(1.0, similarity_score)) 
             if norm_sim < CONFIDENCE_THRESHOLD:
                 continue
 
@@ -443,7 +443,7 @@ class RetrieverAgent(BaseAgent):
         sentences = [s.strip() for s in content.replace("\u3002", ".").split(".") if s.strip()]
         return sentences[0][:max_length] if sentences else content[:max_length]
 
-    def run(self, state: AgentState) -> Dict[str, Any]:
+    def run(self, state: AgentState) -> AgentState:
         """
         Execute the full retrieval pipeline on the current AgentState.
 
@@ -480,12 +480,12 @@ class RetrieverAgent(BaseAgent):
             self.logger.warning(
                 "No documents above confidence threshold or topic consistency filter"
             )
-            return {
-                "rewritten_query": rewritten_query,
-                "retrieved_docs": [],
-                "evidence_summary": ["No relevant documents found."],
-                "retrieval_strategy": self._build_strategy(0, []),
-            }
+            return AgentState(
+                rewritten_query=rewritten_query,
+                retrieved_docs=[],
+                evidence_summary=["No relevant documents found."],
+                retrieval_strategy=self._build_strategy(0, []),
+            )
 
         # 3 — Extract evidence
         evidence_summary = self.extract_evidence(ranked_docs, use_llm=False)
@@ -506,12 +506,12 @@ class RetrieverAgent(BaseAgent):
         self.logger.info(
             f"Retrieval complete: {len(formatted_docs)} docs, {len(evidence_summary)} evidence items"
         )
-        return {
-            "rewritten_query": rewritten_query,
-            "retrieved_docs": formatted_docs,
-            "evidence_summary": evidence_summary,
-            "retrieval_strategy": self._build_strategy(len(formatted_docs), list(sources)),
-        }
+        return AgentState(
+            rewritten_query=rewritten_query,
+            retrieved_docs=formatted_docs,
+            evidence_summary=evidence_summary,
+            retrieval_strategy=self._build_strategy(len(formatted_docs), list(sources)),
+        )
 
     # Helpers
     @staticmethod
@@ -525,18 +525,18 @@ class RetrieverAgent(BaseAgent):
         }
 
     @staticmethod
-    def _empty_result() -> Dict[str, Any]:
-        return {
-            "rewritten_query": "",
-            "retrieved_docs": [],
-            "evidence_summary": [],
-            "retrieval_strategy": {},
-        }
+    def _empty_result() -> AgentState:
+        return AgentState(
+            rewritten_query="",
+            retrieved_docs=[],
+            evidence_summary=[],
+            retrieval_strategy={},
+        )
 
 _agent = RetrieverAgent()
 
 
-def retriever_node(state: AgentState) -> Dict[str, Any]:
+def retriever_node(state: AgentState) -> AgentState:
     """
     LangGraph node wrapper for the Retriever Agent.
 

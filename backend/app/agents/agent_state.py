@@ -51,9 +51,10 @@ class AgentState(TypedDict, total=False):
     retrieved_docs: List[Document]
     evidence_summary: List[str]
     
-    # Future: Generator Agent outputs
+    # Generator Agent outputs
     draft: str
-    
+    generation_metadata: Dict[str, Any]
+
     # Future: Critic Agent outputs
     critique: Dict[str, Any]
     revision_count: int

@@ -222,26 +222,40 @@ def combine_results(
       chunk 1+ → content  (role: "chunk")
     """
     summary_text = f"Summary of {doc.title}:\n{summary}" if summary else ""
+
+    # Base metadata fields carried by every chunk
+    base_meta = {
+        **doc.metadata,
+        "doc_id": doc.id,
+        "source_type": doc.source_type,
+        "doc_summary": summary,  # available for Generator agent at inference time
+    }
+
     summary_chunk = Chunk(
         doc_id=doc.id,
         chunk_index=0,
         content=summary_text,
         metadata={
-            **doc.metadata,
+            **base_meta,
             "role": "summary",
             "summary_failed": summary == "",
         },
     )
 
     # Re-index content chunks starting at 1
-    # Global-Local Context: Prepend summary to the beginning of each content chunk
+    # NOTE: summary is stored in metadata["doc_summary"] only — never prepended
+    # to content. This keeps chunk embeddings distinct for effective retrieval.
     reindexed = []
     for i, chunk in enumerate(content_chunks):
-        enhanced_content = f"{summary_text}\n\n---\n\n{chunk.content}" if summary_text else chunk.content
         reindexed.append(
             chunk.model_copy(update={
                 "chunk_index": i + 1,
-                "content": enhanced_content
+                "metadata": {
+                    **chunk.metadata,
+                    "doc_id": doc.id,
+                    "source_type": doc.source_type,
+                    "doc_summary": summary,
+                },
             })
         )
 

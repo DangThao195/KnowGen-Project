@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Any, Dict
+from typing import Any, Dict  # Dict/Any still used by _parse_json
 
 from app.agents.agent_state import AgentState
 from app.agents.base_agent import BaseAgent
@@ -94,7 +94,7 @@ class SupervisorAgent(BaseAgent):
         super().__init__()
         self.llm_client = LLMClient()
 
-    def run(self, state: AgentState) -> Dict[str, Any]:
+    def run(self, state: AgentState) -> AgentState:
         """
         Execute the Supervisor logic on the current AgentState.
 
@@ -103,7 +103,7 @@ class SupervisorAgent(BaseAgent):
             2. Send the query + SYSTEM_PROMPT to the LLM requesting a JSON
                classification response.
             3. Parse the JSON (stripping markdown fences if the LLM wraps them).
-            4. Return a dict that LangGraph merges into AgentState:
+            4. Return an AgentState partial that LangGraph merges into the shared state:
                ``task_type``, ``language``, ``intent_summary``, ``plan``.
 
         On parse failure, returns ``_fallback_state()`` so the pipeline does not crash.
@@ -116,12 +116,12 @@ class SupervisorAgent(BaseAgent):
 
         parsed = self._parse_json(response_text)
         if parsed:
-            return {
-                "task_type": parsed.get("task_type", "unknown"),
-                "language": parsed.get("language", "en"),
-                "intent_summary": parsed.get("intent_summary", "Unknown intent"),
-                "plan": parsed.get("plan", {"steps": [], "context_needed": ""}),
-            }
+            return AgentState(
+                task_type=parsed.get("task_type", "unknown"),
+                language=parsed.get("language", "en"),
+                intent_summary=parsed.get("intent_summary", "Unknown intent"),
+                plan=parsed.get("plan", {"steps": [], "context_needed": ""}),
+            )
 
         self.logger.error(f"Failed to parse supervisor JSON. Raw: {response_text}")
         return self._fallback_state()
@@ -138,19 +138,19 @@ class SupervisorAgent(BaseAgent):
             return None
 
     @staticmethod
-    def _fallback_state() -> Dict[str, Any]:
-        return {
-            "task_type": "unknown",
-            "language": "en",
-            "intent_summary": "Failed to parse supervisor response.",
-            "plan": {"steps": ["Clarify user intent"], "context_needed": ""},
-        }
+    def _fallback_state() -> AgentState:
+        return AgentState(
+            task_type="unknown",
+            language="en",
+            intent_summary="Failed to parse supervisor response.",
+            plan={"steps": ["Clarify user intent"], "context_needed": ""},
+        )
 
 
 _agent = SupervisorAgent()
 
 
-def supervisor_node(state: AgentState) -> Dict[str, Any]:
+def supervisor_node(state: AgentState) -> AgentState:
     """
     LangGraph node wrapper for the Supervisor Agent.
 
@@ -161,7 +161,7 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     Input (from AgentState):
         - user_query (str)
 
-    Output (merged into AgentState):
+    Output (partial AgentState merged by LangGraph):
         - task_type (str): "qa" | "quiz" | "unknown"
         - language (str): "en" | "vi" | "mixed"
         - intent_summary (str)

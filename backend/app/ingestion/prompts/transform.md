@@ -93,27 +93,57 @@ class Chunk(BaseModel):
 
 Merge the summary and chunks into a list of `TransformedDocument` objects ready for embedding.
 
+**Design principle — Separate retrieval content from generation context:**
+
+The summary and chunk content serve two different consumers:
+- The **embedding model** (retrieval stage) needs clean, precise chunk text to produce accurate similarity scores. Mixing the summary into `page_content` causes all chunks to share nearly identical embeddings, making retrieval unreliable.
+- The **LLM** (generation stage) benefits from the summary as global context when synthesizing an answer.
+
+Therefore: the summary is stored in `metadata["doc_summary"]` only. The Generator agent injects it into the prompt at generation time — it is never embedded into `page_content`.
+
 **Structure per document:**
 
 ```
-[Summary Chunk]  ← index 0, special role
-  doc_id    : document.id
+[Summary Chunk]  ← index 0, special role — indexed for retrieval like any other chunk
+  doc_id     : document.id
   chunk_index: 0
-  content   : "Summary of <title>:\n<summary text>"
-  metadata  : { ..., "role": "summary" }
+  content    : "Summary of <title>:\n<summary text>"   ← embedded as its own chunk
+  metadata   : { ..., "role": "summary", "doc_summary": "<summary text>" }
 
 [Content Chunks] ← index 1, 2, 3, ...
-  doc_id    : document.id
+  doc_id     : document.id
   chunk_index: 1, 2, 3, ...
-  content   : <chunk text>
-  metadata  : { ..., "role": "chunk", "header_path": "H1 > H2 > ..." }
+  content    : <chunk text only — no summary prefix>
+  metadata   : { ..., "role": "chunk", "header_path": "H1 > H2 > ...",
+                 "doc_summary": "<summary text>" }   ← summary stored here for Generator use
 ```
+
+**Key rules:**
+- The `doc_summary` field is populated on **every** chunk (both summary chunk and content chunks) so the Generator always has access to the document's global context regardless of which chunks are retrieved.
+- The summary text is **never prepended** to content chunk `content`. Embedding the summary inline would cause every chunk to produce nearly identical vectors, collapsing similarity scores and making ranked retrieval meaningless.
+- The summary chunk (index 0) is the only place the summary appears in `content`, and it is indexed as a standalone retrieval unit — useful when the user query targets high-level document topics.
 
 **Example output for `report.pdf`:**
 ```
-chunk 0 → "Summary of report.pdf:\nThis document covers..."
-chunk 1 → "# introduction\nThis report aims to..."
-chunk 2 → "## methodology\nWe used a mixed-methods..."
+chunk 0 → content   : "Summary of report.pdf:\nThis document covers..."
+           metadata  : { "role": "summary", "doc_summary": "This document covers..." }
+
+chunk 1 → content   : "# introduction\nThis report aims to..."
+           metadata  : { "role": "chunk", "header_path": "H1", 
+                         "doc_summary": "This document covers..." }
+
+chunk 2 → content   : "## methodology\nWe used a mixed-methods..."
+           metadata  : { "role": "chunk", "header_path": "H1 > H2",
+                         "doc_summary": "This document covers..." }
+```
+
+**How the Generator uses `doc_summary` at inference time:**
+```python
+# Generator agent — build LLM prompt context from retrieved chunks
+for doc in retrieved_docs:
+    summary = doc.metadata.get("doc_summary", "")
+    chunk_text = doc.page_content
+    full_context = f"[Document Summary]: {summary}\n[Relevant Chunk]: {chunk_text}"
 ```
 
 **Output type:**
@@ -123,7 +153,7 @@ class TransformedDocument(BaseModel):
     doc_id: str
     title: str
     source_type: str
-    chunks: List[Chunk]       # summary chunk first, then content chunks
+    chunks: List[Chunk]       # summary chunk first (index 0), then content chunks
     metadata: Dict[str, Any]
 ```
 

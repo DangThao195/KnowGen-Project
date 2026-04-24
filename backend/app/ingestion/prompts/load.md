@@ -36,8 +36,8 @@ LangChain's FAISS implementation expects a list of standard `langchain_core.docu
 
 - Iterate through the `.chunks` list of each `TransformedDocument`.
 - For every `Chunk`, create a standard LangChain `Document`:
-  - `page_content`: `chunk.content` (Note: The Local-Global Context technique has already prepended the summary to this content in the Transform stage).
-  - `metadata`: `chunk.metadata` (Includes `doc_id`, `role`, `header_path`, etc.).
+  - `page_content`: `"passage: " + chunk.content` — the E5 model requires this prefix on all indexed texts to align with query-side `"query: "` prefix at retrieval time. The content itself is **only the chunk text** — the document summary is never prepended here (see Transform stage design).
+  - `metadata`: `chunk.metadata` — includes `doc_id`, `role`, `header_path`, `doc_summary`, `source_type`, etc. The `doc_summary` field carries the global document context for use by the Generator agent at inference time; it is stored as metadata only and is never mixed into `page_content`.
 
 ### Step 3 — Embed and Store in FAISS
 
@@ -70,5 +70,3 @@ This function does not necessarily need to return a value (it can return a boole
 | Empty input | If the `documents` list is empty, log a warning and return early to avoid memory errors. |
 | API Rate Limit (if using Cloud Embeddings) | LangChain's embedding wrappers typically have built-in retry mechanisms. However, wrap the embedding call in a Try/Catch block to log exceptions and prevent corrupting the existing local FAISS index on disk. |
 | Missing FAISS dependencies | Ensure `faiss-cpu` (or `faiss-gpu`) is installed. Catch `ImportError` explicitly at the top of the file. |
-
-
